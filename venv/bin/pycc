@@ -1,0 +1,3 @@
+#!/Users/morganmalavasi/Desktop/unimi/magistrali/tesi/CircleClustering/venv/bin/python3
+from numba.pycc import main
+main()
