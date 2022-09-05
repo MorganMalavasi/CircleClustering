@@ -89,7 +89,7 @@ def createDatasets(key = None):
     listOfDataset.append((sample12, l12, n_dataset12))
     listOfDataset.append((sample13, l13, n_dataset13))
     listOfDataset.append((sample14, l14, n_dataset14))
-    '''
+    ''' 
 
     switcher = {
         0 : create_dataset_base(samples = 500, features = 2, centers = 3, display = False, n_dataset = 0),
