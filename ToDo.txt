@@ -1,0 +1,4 @@
+- implement the gaussian mixture model and detect where a point finishes
+- implement the correct smoothing 
+- try to descretize the space of [0, 2PI]
+
