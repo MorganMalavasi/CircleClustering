@@ -1,3 +1,4 @@
+- issue -> remove the bug of the 2 clusters that forms where there is only one 
 - implement the gaussian mixture model and detect where a point finishes
 - implement the correct smoothing 
 - try to descretize the space of [0, 2PI]

@@ -94,7 +94,7 @@ def createDatasets(key = None):
     switcher = {
         0 : create_dataset_base(samples = 500, features = 2, centers = 3, display = False, n_dataset = 0),
         1 : create_dataset_base(samples = 800, features = 10, centers = 4, display = False, n_dataset = 1),
-        2 : create_dataset_base(samples = 5000, features = 6, centers = 6, standard_deviation_cluster=2.0, display = False, n_dataset = 2),
+        2 : create_dataset_base(samples = 5000, features = 6, centers = 6, standard_deviation_cluster=1.2, display = False, n_dataset = 2),
         3 : create_dataset_classification(n_samples = 500, n_features = 3, n_redundant = 0, n_informative = 2, n_clustes_per_class=1, display = False, n_dataset = 3),
         4 : create_dataset_circles(samples = 1000, noise = 0.05, display = False, n_dataset = 4),
         5 : create_dataset_moon(samples = 1000, noise = 0.05, display = False, n_dataset = 5) 

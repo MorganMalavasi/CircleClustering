@@ -13,3 +13,35 @@ def histogram(theta, nbins=None, verb=True):
 
 def averageOfList(lst):
     return sum(lst) / len(lst)
+
+
+# circular space problem
+def removeCircularSpace(hist):
+    while True:
+        pivot = findAnEmptySpace(hist)
+        if pivot != -1:
+            return rotateTheHistogram(hist, pivot)
+        else:
+            hist = removeSpace(hist)
+
+
+def findAnEmptySpace(hist):
+    for i in range(hist.shape[0]):
+        if hist[i] == 0:
+            return i
+    return -1
+
+def removeSpace(hist):
+    minHist = min(hist)
+    newHist = np.empty(hist.shape[0])
+        
+    for i in range(hist.shape[0]):
+        newHist[i] = hist[i] - minHist
+    
+    return newHist
+
+def rotateTheHistogram(hist, pivot):
+    n = hist.shape[0]
+    distance = n - pivot
+    newHist = np.roll(hist, distance)
+    return newHist

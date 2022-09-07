@@ -1,9 +1,32 @@
+import sys
 from random import sample
 import numpy as np
 from anytree import AnyNode
 from anytree.exporter import DotExporter
 from sklearn.neighbors._nearest_centroid import NearestCentroid
-import sys
+from utility import removeCircularSpace
+import data_plot
+
+
+def hierarchical(hist, bins, samples, theta):
+    # new algorithm for counting the number of clusters in an histogram of densities
+    
+    # PRECOMPUTATION
+    # - removing circular problem
+    if hist[0] > 0 and hist[hist.shape[0]-1] > 0:
+        hist = removeCircularSpace(hist) 
+        data_plot.plot_scatter(hist, bins, mode=2)
+            
+
+    # - smoothing 
+
+    # - others 
+
+    clusters = getClustersFromHistogram(hist, bins)
+    thetaLabels = labelTheSamples(samples, theta, clusters, bins)
+    centroids = centroidsFinder(samples, thetaLabels)
+
+    return clusters, thetaLabels, centroids
 
 
 def getClustersFromHistogram(heights, nbins):
