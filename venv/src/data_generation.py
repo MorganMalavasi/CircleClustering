@@ -97,7 +97,8 @@ def createDatasets(key = None):
         2 : create_dataset_base(samples = 5000, features = 6, centers = 6, standard_deviation_cluster=1.2, display = False, n_dataset = 2),
         3 : create_dataset_classification(n_samples = 500, n_features = 3, n_redundant = 0, n_informative = 2, n_clustes_per_class=1, display = False, n_dataset = 3),
         4 : create_dataset_circles(samples = 1000, noise = 0.05, display = False, n_dataset = 4),
-        5 : create_dataset_moon(samples = 1000, noise = 0.05, display = False, n_dataset = 5) 
+        5 : create_dataset_moon(samples = 1000, noise = 0.05, display = False, n_dataset = 5),
+        6 : create_dataset_base(samples = 7000, features = 15, centers = 8, standard_deviation_cluster=1.5, display = False, n_dataset = 6)
     }
 
     return switcher.get(key, "Invalid Input")

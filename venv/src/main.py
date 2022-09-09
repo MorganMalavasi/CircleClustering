@@ -20,7 +20,7 @@ PI = np.pi
 PI = np.float32(PI)
 
 
-dataset = data_generation.createDatasets(5)
+dataset = data_generation.createDatasets(6)
 samples, labels, n_dataset = dataset[0], dataset[1], dataset[2]
 
 '''CIRCLE CLUSTERING'''
@@ -31,16 +31,16 @@ theta = cc.loop(matrixOfWeights, theta, S, C, 0.001)
 
 # //////////////////////////////////////////////////////////////////
 # PLOTTING PCA
-data_plot.doPCA(samples, labels, n_dataset)
+# data_plot.doPCA(samples, labels, n_dataset)
 
 # PLOTTING THE THETA
-data_plot.plot_circle(theta)
+# data_plot.plot_circle(theta)
 
 hist, bins = utility.histogram(theta, nbins=128)
 
 # PLOTTING THE SCATTER
-data_plot.plot_scatter(hist, bins, mode=2)
-# data_plot.plot_hist(hist, bins)
+# data_plot.plot_scatter(hist, bins, mode=2)
+data_plot.plot_hist(hist, bins)
 # //////////////////////////////////////////////////////////////////
 
 '''
@@ -56,4 +56,4 @@ clusters, thetaLabels, centroids = histogram_clustering_hierarchical.hierarchica
 # print(clusters)
 
 # PLOTTING THE THETA WITH COLOURS
-data_plot.plot_circle(theta, thetaLabels)
+# data_plot.plot_circle(theta, thetaLabels)

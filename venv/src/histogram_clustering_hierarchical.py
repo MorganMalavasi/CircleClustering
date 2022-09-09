@@ -4,8 +4,10 @@ import numpy as np
 from anytree import AnyNode
 from anytree.exporter import DotExporter
 from sklearn.neighbors._nearest_centroid import NearestCentroid
+from sklearn.neighbors import KernelDensity
 from utility import removeCircularSpace
 import data_plot
+import matplotlib.pyplot as plt
 
 
 def hierarchical(hist, bins, samples, theta):
@@ -13,12 +15,35 @@ def hierarchical(hist, bins, samples, theta):
     
     # PRECOMPUTATION
     # - removing circular problem
+    '''
     if hist[0] > 0 and hist[hist.shape[0]-1] > 0:
         hist = removeCircularSpace(hist) 
-        data_plot.plot_scatter(hist, bins, mode=2)
-            
+        data_plot.plot_hist(hist, bins)
+        print(hist[0])
+        print(hist[hist.shape[0]-1])
+    '''
+    
+    # - smoothing
+    model = KernelDensity(bandwidth=(bins[1]), kernel='gaussian')
+    sample = theta.reshape((len(theta), 1))
+    model.fit(sample)
 
-    # - smoothing 
+    # values = np.asarray([value for value in range(1, bins.shape[0])])
+    values = np.copy(bins)
+    values = values.reshape(len(values), 1)
+    probabilities = model.score_samples(values)
+    probabilities = np.exp(probabilities)
+
+    plt.hist(sample, bins=bins, density=True)
+    plt.plot(values[:], probabilities)
+    plt.show()
+    
+    
+    
+    
+
+    # print(logprob)
+    # data_plot.plot_scatter(lo, bins, mode=2)
 
     # - others 
 
