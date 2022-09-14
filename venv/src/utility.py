@@ -52,6 +52,25 @@ def averageOfList(lst):
 def discretization(array, bins):
     return np.digitize(array, bins)
 
+# remove low percentage
+def removeLowPercentage(hist):
+    newHist = np.empty(hist.shape[0])
+    
+    sumOfDifferences = 0
+    count = 0
+    for i in range(hist.shape[0]-1):
+        sumOfDifferences += abs(hist[i+1] - hist[i])
+        count += 1
+    
+    threshold = (sumOfDifferences / count)*2
+
+    for j in range(hist.shape[0]):
+        if hist[j] >= threshold:
+            newHist[j] = hist[j]
+        else:
+            newHist[j] = 0
+    return newHist
+
 # circular space problem
 def rotateHistogram(hist, bins):
     # find min
@@ -66,10 +85,10 @@ def rotateHistogram(hist, bins):
 
 def rotate(hist, pivot, bins):
     n = hist.shape[0]
-    distance = n - pivot
-    newHist = np.roll(hist, distance)
-    newBins = np.roll(bins, distance)
-    return newHist, newBins
+    movement = n - pivot
+    newHist = np.roll(hist, movement)
+    newBins = np.roll(bins, movement)
+    return newHist, newBins, movement
 
 
 # TODO -> find an heuristic for selecting the value of the percentage to remove
