@@ -5,16 +5,30 @@ from anytree import AnyNode
 from anytree.exporter import DotExporter
 from sklearn.neighbors._nearest_centroid import NearestCentroid
 from sklearn.neighbors import KernelDensity
-from utility import removeCircularSpace
+from utility import rotateHistogram, removeLowPercentageOfNoise, smooth_weighted
+from scipy.ndimage import gaussian_filter1d
 import data_plot
 import matplotlib.pyplot as plt
 
 
-def hierarchical(hist, bins, samples, theta):
-    # new algorithm for counting the number of clusters in an histogram of densities
+def hierarchicalDetectionOfClusters(hist, bins, samples, theta):
     
     # PRECOMPUTATION
-    # - removing circular problem
+    
+    # - removing circular problem    
+    hist = rotateHistogram(hist)
+    data_plot.plot_scatter(hist, bins, mode=2)
+    
+    # removing percentual of noise
+    hist = removeLowPercentageOfNoise(hist)
+    data_plot.plot_scatter(hist, bins, mode=2)
+
+    # smoothing
+    # hist = smooth_weighted(hist)
+    hist1 = gaussian_filter1d(hist, 1)
+    hist2 = smooth_weighted(hist)
+    data_plot.plot_scatter(hist1, bins, mode=2)
+    data_plot.plot_scatter(hist2, bins, mode=2)
     '''
     if hist[0] > 0 and hist[hist.shape[0]-1] > 0:
         hist = removeCircularSpace(hist) 
@@ -22,9 +36,17 @@ def hierarchical(hist, bins, samples, theta):
         print(hist[0])
         print(hist[hist.shape[0]-1])
     '''
-    
-    # - smoothing
-    model = KernelDensity(bandwidth=(bins[1]), kernel='gaussian')
+
+    '''
+    maxHeight = max(hist)
+    maxHeight_5_percent = maxHeight / 20 
+    for i in range(hist.shape[0]):
+        if hist[i] < maxHeight_5_percent:
+            hist[i] = 0
+    '''
+
+    # - smoothing nr 1 -> KDE 
+    model = KernelDensity(bandwidth=(bins[1]/2), kernel='gaussian')
     sample = theta.reshape((len(theta), 1))
     model.fit(sample)
 
@@ -34,20 +56,15 @@ def hierarchical(hist, bins, samples, theta):
     probabilities = model.score_samples(values)
     probabilities = np.exp(probabilities)
 
-    plt.hist(sample, bins=bins, density=True)
-    plt.plot(values[:], probabilities)
-    plt.show()
-    
-    
-    
-    
-
     # print(logprob)
-    # data_plot.plot_scatter(lo, bins, mode=2)
+    # data_plot.plot_scatter(probabilities, bins, mode=2)
+    
+    # plt.hist(sample, bins=bins, density=True)
+    # plt.plot(values[:], probabilities)
+    # plt.show()
 
     # - others 
-
-    clusters = getClustersFromHistogram(hist, bins)
+    clusters = getClustersFromHistogram(hist, values)
     thetaLabels = labelTheSamples(samples, theta, clusters, bins)
     centroids = centroidsFinder(samples, thetaLabels)
 

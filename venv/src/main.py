@@ -31,7 +31,7 @@ theta = cc.loop(matrixOfWeights, theta, S, C, 0.001)
 
 # //////////////////////////////////////////////////////////////////
 # PLOTTING PCA
-# data_plot.doPCA(samples, labels, n_dataset)
+# data_plot.doPCA(samples, labels, n_dataset)
 
 # PLOTTING THE THETA
 # data_plot.plot_circle(theta)
@@ -39,8 +39,8 @@ theta = cc.loop(matrixOfWeights, theta, S, C, 0.001)
 hist, bins = utility.histogram(theta, nbins=128)
 
 # PLOTTING THE SCATTER
-# data_plot.plot_scatter(hist, bins, mode=2)
-data_plot.plot_hist(hist, bins)
+data_plot.plot_scatter(hist, bins, mode=2)
+# data_plot.plot_hist(hist, bins)
 # //////////////////////////////////////////////////////////////////
 
 '''
@@ -52,7 +52,7 @@ data_plot.plot_scatter(hist_smoothed_weighted, bins, mode=2)
 data_plot.plot_hist(hist_smoothed_weighted, bins)
 '''
 
-clusters, thetaLabels, centroids = histogram_clustering_hierarchical.hierarchical(hist, bins, samples, theta)
+clusters, thetaLabels, centroids = histogram_clustering_hierarchical.hierarchicalDetectionOfClusters(hist, bins, samples, theta)
 # print(clusters)
 
 # PLOTTING THE THETA WITH COLOURS

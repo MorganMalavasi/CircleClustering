@@ -14,8 +14,6 @@ print(sample)
 print(sample.shape[0])
 # plot the histogram
 
-
-
 # fit density
 model = KernelDensity(bandwidth=2, kernel='gaussian')
 sample = sample.reshape((len(sample), 1))
@@ -30,4 +28,4 @@ probabilities = exp(probabilities)
 # plot the histogram and pdf
 pyplot.hist(sample, bins=50, density=True)
 pyplot.plot(values[:], probabilities)
-pyplot.show() 
+pyplot.show()
