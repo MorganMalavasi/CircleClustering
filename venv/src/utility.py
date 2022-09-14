@@ -1,5 +1,39 @@
 import sys
 import numpy as np
+import pandas as pd
+from sklearn.neighbors import KernelDensity
+
+def numberOfBinsSturgesRule(points):
+    n = points.shape[0]
+    """
+    Sturges rule takes into account the size of the data to decide on the number of bins. 
+    The formula for calculating the number of bins is shown below.
+    bins = 1 + ceil(log2(n))
+    In the above equation ’n’ is the sample size. 
+    The larger the size of the sample, the larger would be the number of bins. 
+    Ceiling the result of the logarithm ensures the result to be an integer.
+    """
+    bin_count = int(np.ceil(np.log2(n)) + 1)
+    return bin_count
+
+def numberOfBinsFreedmanDiaconisRuleModified(points):
+    """
+    Freedman-Diaconis rule not only considers the sample size but also considers the spread of the sample.
+    bin width= 2 * (IQR(x) / n‾√3)
+    bins = ceil(  (max(x) - min(x)) / bin width  )
+
+    In the above equation ‘q3’ stands for third quartile, 
+    ‘q1' stands for first quartile and ’n’ stands for sample size. 
+    As the sample size increases, the bin width decreases which in turn increases the number of bins.
+    """
+    norm_dist = pd.Series(points)
+    q1 = norm_dist.quantile(0.25)
+    q3 = norm_dist.quantile(0.75)
+    iqr = q3 - q1
+    bin_width = (2 * iqr) / (len(norm_dist) ** (1 / 3))
+    bin_count = int(np.ceil((norm_dist.max() - norm_dist.min()) / bin_width))
+    return pow(bin_count, 2)
+
 
 def histogram(theta, nbins=None, verb=True):
     if nbins is None:
@@ -19,7 +53,7 @@ def discretization(array, bins):
     return np.digitize(array, bins)
 
 # circular space problem
-def rotateHistogram(hist):
+def rotateHistogram(hist, bins):
     # find min
     minHist = sys.maxsize
     index = 0
@@ -28,13 +62,14 @@ def rotateHistogram(hist):
             minHist = hist[i]
             index = i
 
-    return rotate(hist, index)
+    return rotate(hist, index, bins)
 
-def rotate(hist, pivot):
+def rotate(hist, pivot, bins):
     n = hist.shape[0]
     distance = n - pivot
     newHist = np.roll(hist, distance)
-    return newHist
+    newBins = np.roll(bins, distance)
+    return newHist, newBins
 
 
 # TODO -> find an heuristic for selecting the value of the percentage to remove
@@ -113,3 +148,38 @@ def smooth_weighted(values):
         output[i] = sum / count
 
     return output
+
+def kde(bins, theta):
+    """
+    A histogram is a simple visualization of data where bins are defined, 
+    and the number of data points within each bin is tallied
+
+    Here we have used kernel='gaussian'. 
+    Mathematically, a kernel is a positive function which is controlled by the bandwidth parameter. 
+    Given this kernel form, the density estimate at a point within a group of points is given by:
+
+    pk(y) = sum[1,...n]( K(y - xi; h) )
+
+    The bandwidth here acts as a smoothing parameter, 
+    controlling the tradeoff between bias and variance in the result. 
+    A large bandwidth leads to a very smooth (i.e. high-bias) density distribution. 
+    A small bandwidth leads to an unsmooth (i.e. high-variance) density distribution.
+    """
+    # - smoothing nr 1 -> KDE 
+    model = KernelDensity(bandwidth=(bins[1]/2), kernel='gaussian')
+    sample = theta.reshape((len(theta), 1))
+    model.fit(sample)
+
+    # values = np.asarray([value for value in range(1, bins.shape[0])])
+    values = np.copy(bins)
+    values = values.reshape(len(values), 1)
+    probabilities = model.score_samples(values)
+    probabilities = np.exp(probabilities)
+
+    # data_plot.plot_scatter(probabilities, bins, mode=2)
+    
+    # plt.hist(sample, bins=bins, density=True)
+    # plt.plot(values[:], probabilities)
+    # plt.show()
+
+    return probabilities

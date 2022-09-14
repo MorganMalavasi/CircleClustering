@@ -13,58 +13,33 @@ import matplotlib.pyplot as plt
 
 def hierarchicalDetectionOfClusters(hist, bins, samples, theta):
     
-    # PRECOMPUTATION
+    #############################################################################
+    # PRECOMPUTATION ############################################################
+    #############################################################################
     
+    print("--------1--------")
+    print(hist)
+    print(bins)
+
     # - removing circular problem    
-    hist = rotateHistogram(hist)
-    data_plot.plot_scatter(hist, bins, mode=2)
-    
+    # hist, bins = rotateHistogram(hist, bins)
+    # data_plot.plot_scatter(hist, bins, mode=2)
     # removing percentual of noise
     hist = removeLowPercentageOfNoise(hist)
     data_plot.plot_scatter(hist, bins, mode=2)
-
     # smoothing
-    # hist = smooth_weighted(hist)
-    hist1 = gaussian_filter1d(hist, 1)
-    hist2 = smooth_weighted(hist)
-    data_plot.plot_scatter(hist1, bins, mode=2)
-    data_plot.plot_scatter(hist2, bins, mode=2)
-    '''
-    if hist[0] > 0 and hist[hist.shape[0]-1] > 0:
-        hist = removeCircularSpace(hist) 
-        data_plot.plot_hist(hist, bins)
-        print(hist[0])
-        print(hist[hist.shape[0]-1])
-    '''
+    hist = gaussian_filter1d(hist, 2)
+    hist = np.ceil(hist)
+    data_plot.plot_scatter(hist, bins, mode=2)
 
-    '''
-    maxHeight = max(hist)
-    maxHeight_5_percent = maxHeight / 20 
-    for i in range(hist.shape[0]):
-        if hist[i] < maxHeight_5_percent:
-            hist[i] = 0
-    '''
-
-    # - smoothing nr 1 -> KDE 
-    model = KernelDensity(bandwidth=(bins[1]/2), kernel='gaussian')
-    sample = theta.reshape((len(theta), 1))
-    model.fit(sample)
-
-    # values = np.asarray([value for value in range(1, bins.shape[0])])
-    values = np.copy(bins)
-    values = values.reshape(len(values), 1)
-    probabilities = model.score_samples(values)
-    probabilities = np.exp(probabilities)
-
-    # print(logprob)
-    # data_plot.plot_scatter(probabilities, bins, mode=2)
+    print("--------2--------")
+    print(hist)
+    print(bins)
+    #############################################################################
+    # TREE BUILDING #############################################################
+    #############################################################################
     
-    # plt.hist(sample, bins=bins, density=True)
-    # plt.plot(values[:], probabilities)
-    # plt.show()
-
-    # - others 
-    clusters = getClustersFromHistogram(hist, values)
+    clusters = getClustersFromHistogram(hist, bins)
     thetaLabels = labelTheSamples(samples, theta, clusters, bins)
     centroids = centroidsFinder(samples, thetaLabels)
 
@@ -78,11 +53,11 @@ def getClustersFromHistogram(heights, nbins):
     # print(" - creation of the file tree.png with the tree")
     
     # print the tree in tree.png
-    # DotExporter(tree).to_picture("tree.png")
+    DotExporter(tree).to_picture("img/tree.png")
 
     detectClusters(tree)        
-    newTree = createTreeOfClusters(tree, nbins.shape[0]-1)
-    # DotExporter(newTree).to_picture("clusters.png")
+    newTree = createTreeOfClusters(tree, nbins)
+    DotExporter(newTree).to_picture("img/clusters.png")
     
     # each cluster is a tuple that indicates the number of the cluster and the interval of membership
     clusters = searchClusters(newTree)
@@ -216,9 +191,11 @@ def detectClusters(tree):
 
 # ******************************* create the tree of clusters and detect their number *************************
 
-def createTreeOfClusters(tree, size_bins):
-
-    interval = (0.0, size_bins)
+def createTreeOfClusters(tree, nbins):
+    
+    size_bins = nbins.shape[0]-1
+    interval = (0, size_bins)
+    
     newTree = AnyNode(name="[" + str(interval[0]) + " - " + str(interval[1]) + "]", interval = interval)
     
     stackOfParents = []
@@ -301,6 +278,11 @@ def labelTheSamples(samples, theta, clusters, bins):
 def centroidsFinder(samples, labels):
     clf = NearestCentroid().fit(samples, labels)
     return clf.centroids_
+
+def covertValueInTheCircle(value, bins):
+
+    return 
+
 
 
 '''

@@ -9,6 +9,7 @@ from rich.console import Console
 from rich.table import Table
 from tqdm import tqdm
 from multiprocessing import Process
+from utility import numberOfBinsSturgesRule, numberOfBinsFreedmanDiaconisRuleModified
 
 os.environ["KMP_WARNINGS"] = "FALSE" 
 
@@ -36,7 +37,7 @@ theta = cc.loop(matrixOfWeights, theta, S, C, 0.001)
 # PLOTTING THE THETA
 # data_plot.plot_circle(theta)
 
-hist, bins = utility.histogram(theta, nbins=128)
+hist, bins = utility.histogram(theta, nbins=numberOfBinsFreedmanDiaconisRuleModified(theta))
 
 # PLOTTING THE SCATTER
 data_plot.plot_scatter(hist, bins, mode=2)
