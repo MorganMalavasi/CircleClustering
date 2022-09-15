@@ -32,10 +32,10 @@ theta = cc.loop(matrixOfWeights, theta, S, C, 0.001)
 
 # //////////////////////////////////////////////////////////////////
 # PLOTTING PCA
-# data_plot.doPCA(samples, labels, n_dataset)
+data_plot.doPCA(samples, labels, n_dataset)
 
 # PLOTTING THE THETA
-# data_plot.plot_circle(theta)
+data_plot.plot_circle(theta)
 
 hist, bins = utility.histogram(theta, nbins=numberOfBinsFreedmanDiaconisRuleModified(theta))
 
@@ -57,4 +57,4 @@ clusters, thetaLabels, centroids = histogram_clustering_hierarchical.hierarchica
 # print(clusters)
 
 # PLOTTING THE THETA WITH COLOURS
-# data_plot.plot_circle(theta, thetaLabels)
+data_plot.plot_circle(theta, thetaLabels)

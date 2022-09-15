@@ -32,7 +32,10 @@ def numberOfBinsFreedmanDiaconisRuleModified(points):
     iqr = q3 - q1
     bin_width = (2 * iqr) / (len(norm_dist) ** (1 / 3))
     bin_count = int(np.ceil((norm_dist.max() - norm_dist.min()) / bin_width))
-    return pow(bin_count, 2)
+    nbins = pow(bin_count, 2)
+    if nbins < 128:
+        nbins = 128 
+    return nbins
 
 
 def histogram(theta, nbins=None, verb=True):

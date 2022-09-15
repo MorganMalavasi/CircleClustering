@@ -19,11 +19,11 @@ def hierarchicalDetectionOfClusters(hist, bins, samples, theta):
 
     # - removing circular problem    
     hist, binsRotated, movement = rotateHistogram(hist, bins)
-    data_plot.plot_scatter(hist, bins, mode=2)
+    # data_plot.plot_scatter(hist, bins, mode=2)
     
     # removing low percentage
     hist = removeLowPercentage(hist)
-    data_plot.plot_scatter(hist, bins, mode=2)
+    # data_plot.plot_scatter(hist, bins, mode=2)
 
     # smoothing
     hist = gaussian_filter1d(hist, 2)
@@ -257,8 +257,8 @@ def labelTheSamples(samples, theta, clusters, bins):
             nr_cluster = cluster[0]
             intervalIndex = cluster[1]
 
-            distanceX = abs(value - bins[intervalIndex[0]])
-            distanceY = abs(value - bins[intervalIndex[1]])
+            distanceX = abs(value - intervalIndex[0])
+            distanceY = abs(value - intervalIndex[1])
             minDistance = min(distanceX, distanceY)
 
             if minDistance < distance:
