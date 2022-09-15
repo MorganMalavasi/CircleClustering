@@ -16,19 +16,15 @@ def hierarchicalDetectionOfClusters(hist, bins, samples, theta):
     #############################################################################
     # PRECOMPUTATION ############################################################
     #############################################################################
+
+    # - removing circular problem    
+    hist, binsRotated, movement = rotateHistogram(hist, bins)
+    data_plot.plot_scatter(hist, bins, mode=2)
     
     # removing low percentage
     hist = removeLowPercentage(hist)
     data_plot.plot_scatter(hist, bins, mode=2)
 
-    # - removing circular problem    
-    hist, bins, movement = rotateHistogram(hist, bins)
-    data_plot.plot_scatter(hist, bins, mode=2)
-
-    # removing percentual of noise
-    # hist = removeLowPercentageOfNoise(hist)
-    # data_plot.plot_scatter(hist, bins, mode=2)
-    
     # smoothing
     hist = gaussian_filter1d(hist, 2)
     # hist = np.ceil(hist)
@@ -38,14 +34,14 @@ def hierarchicalDetectionOfClusters(hist, bins, samples, theta):
     # TREE BUILDING #############################################################
     #############################################################################
     
-    clusters = getClustersFromHistogram(hist, bins, movement)
+    clusters = getClustersFromHistogram(hist, bins, binsRotated, movement)
     thetaLabels = labelTheSamples(samples, theta, clusters, bins)
     centroids = centroidsFinder(samples, thetaLabels)
 
     return clusters, thetaLabels, centroids
 
 
-def getClustersFromHistogram(heights, nbins, movement):
+def getClustersFromHistogram(heights, nbins, nbinsRotated, movement):
     # start alg
     # print(" - create hierarchical tree")
     tree = createHierarchicalTree(heights, nbins)
@@ -55,7 +51,7 @@ def getClustersFromHistogram(heights, nbins, movement):
     # DotExporter(tree).to_picture("img/tree.png")
 
     detectClusters(tree)        
-    newTree = createTreeOfClusters(tree, nbins, movement)
+    newTree = createTreeOfClusters(tree, nbinsRotated, movement)
     DotExporter(newTree).to_picture("img/clusters.png")
     
     # each cluster is a tuple that indicates the number of the cluster and the interval of membership
@@ -195,7 +191,7 @@ def createTreeOfClusters(tree, nbins, movement):
     size_bins = nbins.shape[0]-1
     interval = (0, size_bins)
     print(nbins)
-    newTree = AnyNode(name="[" + str(convertValueInTheCircle(interval[0], nbins, movement)) + " - " + str(convertValueInTheCircle(interval[1], nbins, movement)) + "]", interval = interval)
+    newTree = AnyNode(name="[" + str(0) + " - " + "2pi" + "]", interval = interval)
     
     stackOfParents = []
     stackOfParents.append(newTree)
@@ -279,8 +275,8 @@ def centroidsFinder(samples, labels):
     return clf.centroids_
 
 def convertValueInTheCircle(value, bins, movement):
-    x = np.roll(bins, -movement)
-    return x[value]
+    # x = np.roll(bins, -movement)
+    return round(bins[value], 3)
 
 
 
