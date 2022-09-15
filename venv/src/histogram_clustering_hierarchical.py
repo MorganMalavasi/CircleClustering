@@ -34,14 +34,14 @@ def hierarchicalDetectionOfClusters(hist, bins, samples, theta):
     # TREE BUILDING #############################################################
     #############################################################################
     
-    clusters = getClustersFromHistogram(hist, bins, binsRotated, movement)
+    clusters = getClustersFromHistogram(hist, bins, binsRotated)
     thetaLabels = labelTheSamples(samples, theta, clusters, bins)
     centroids = centroidsFinder(samples, thetaLabels)
 
     return clusters, thetaLabels, centroids
 
 
-def getClustersFromHistogram(heights, nbins, nbinsRotated, movement):
+def getClustersFromHistogram(heights, nbins, nbinsRotated):
     # start alg
     # print(" - create hierarchical tree")
     tree = createHierarchicalTree(heights, nbins)
@@ -51,11 +51,11 @@ def getClustersFromHistogram(heights, nbins, nbinsRotated, movement):
     # DotExporter(tree).to_picture("img/tree.png")
 
     detectClusters(tree)        
-    newTree = createTreeOfClusters(tree, nbinsRotated, movement)
+    newTree = createTreeOfClusters(tree, nbinsRotated)
     DotExporter(newTree).to_picture("img/clusters.png")
     
     # each cluster is a tuple that indicates the number of the cluster and the interval of membership
-    clusters = searchClusters(newTree)
+    clusters = searchClusters(newTree, nbinsRotated)
     return clusters
 
 
@@ -186,7 +186,7 @@ def detectClusters(tree):
 
 # ******************************* create the tree of clusters and detect their number *************************
 
-def createTreeOfClusters(tree, nbins, movement):
+def createTreeOfClusters(tree, nbins):
     
     size_bins = nbins.shape[0]-1
     interval = (0, size_bins)
@@ -207,7 +207,7 @@ def createTreeOfClusters(tree, nbins, movement):
             for i in range(len(children)):
                 currentChildren = children[i]
                 _parent_ = correctParent(stackOfParents, currentChildren.interval, size_bins)
-                newNode = AnyNode(name="[" + str(convertValueInTheCircle(currentChildren.interval[0], nbins, movement)) + " - " + str(convertValueInTheCircle(currentChildren.interval[1], nbins, movement)) + "]", interval = currentChildren.interval, parent = _parent_)
+                newNode = AnyNode(name="[" + str(convertValueInTheCircle(currentChildren.interval[0], nbins)) + " - " + str(convertValueInTheCircle(currentChildren.interval[1], nbins)) + "]", interval = currentChildren.interval, parent = _parent_)
                 stackOfParents.append(newNode)
             
         # put children on the stack
@@ -217,8 +217,7 @@ def createTreeOfClusters(tree, nbins, movement):
 
     return newTree
 
-
-def searchClusters(tree):
+def searchClusters(tree, nbins):
     counterClusters = 0
     clusters = []
 
@@ -231,7 +230,7 @@ def searchClusters(tree):
 
         # if it hasn't children it means it is a leaf (a cluster)
         if len(currentNode.children) == 0:
-            clusters.append((counterClusters, currentNode.interval))
+            clusters.append((counterClusters, convertIntervalInTheCircle(currentNode.interval, nbins)))
             counterClusters += 1
 
         # put children on the stack
@@ -242,7 +241,7 @@ def searchClusters(tree):
     return clusters
     
 
-
+# TODO -> rifare con i valori di theta e non più gli indici
 def labelTheSamples(samples, theta, clusters, bins):
     # TODO -> rivedere, c'è qualche errore nella vicinanza perchè a volte punti vicini sono labellizati in modo sbagliato 
     label = np.empty(samples.shape[0])
@@ -274,9 +273,12 @@ def centroidsFinder(samples, labels):
     clf = NearestCentroid().fit(samples, labels)
     return clf.centroids_
 
-def convertValueInTheCircle(value, bins, movement):
+def convertValueInTheCircle(value, bins):
     # x = np.roll(bins, -movement)
     return round(bins[value], 3)
+
+def convertIntervalInTheCircle(interval, bins):
+    return (convertValueInTheCircle(interval[0], bins), convertValueInTheCircle(interval[1], bins))
 
 
 
