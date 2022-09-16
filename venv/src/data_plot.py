@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
+import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 
 
@@ -199,3 +200,10 @@ def plot_hist(hist, bins):
     # print(samplesInHistogram)
     # figh = px.histogram(samplesInHistogram)
     # figh.show()
+
+def plot_linespace(theta):
+    plt.figure(figsize=(10,7))
+    plt.xlabel("$points$")
+    plt.scatter(theta, [0.005] * len(theta), color='navy', s = 30, marker=2, label="theta")
+    plt.legend()
+    plt.show()

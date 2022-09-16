@@ -241,9 +241,8 @@ def searchClusters(tree, nbins):
     return clusters
     
 
-# TODO -> rifare con i valori di theta e non più gli indici
 def labelTheSamples(samples, theta, clusters, bins):
-    # TODO -> rivedere, c'è qualche errore nella vicinanza perchè a volte punti vicini sono labellizati in modo sbagliato 
+    # TODO -> rivedere, c'è qualche errore nella vicinanza perchè a volte punti vicini sono labellizati in modo sbagliato ?? 
     label = np.empty(samples.shape[0])
     
     for i in range(theta.shape[0]):
