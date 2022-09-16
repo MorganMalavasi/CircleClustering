@@ -20,7 +20,6 @@ console = Console()
 PI = np.pi
 PI = np.float32(PI)
 
-
 dataset = data_generation.createDatasets(0)
 samples, labels, n_dataset = dataset[0], dataset[1], dataset[2]
 
@@ -42,7 +41,7 @@ hist, bins = utility.histogram(theta, nbins=numberOfBinsFreedmanDiaconisRuleModi
 # PLOTTING THE SCATTER
 data_plot.plot_scatter(hist, bins, mode=2)
 # data_plot.plot_hist(hist, bins)
-data_plot.plot_linespace(theta)
+# data_plot.plot_linespace(theta)
 # //////////////////////////////////////////////////////////////////
 
 '''
@@ -55,7 +54,8 @@ data_plot.plot_hist(hist_smoothed_weighted, bins)
 '''
 
 # clusters, thetaLabels, centroids = histogram_clustering_hierarchical.hierarchicalDetectionOfClusters(hist, bins, samples, theta)
-clusters, thetaLabels, centroids = gaussian_mixture_model.mixtureOfGaussiansManual(hist, bins, samples, theta)
+# clusters, thetaLabels, centroids = gaussian_mixture_model.mixtureOfGaussiansManual(3, bins, theta)
+clusters, thetaLabels, centroids = gaussian_mixture_model.mixtureOfGaussiansAutomatic(3, bins, theta)
 # print(clusters)
 
 # PLOTTING THE THETA WITH COLOURS
