@@ -6,17 +6,20 @@ from pandas import DataFrame
 from sklearn import datasets
 from sklearn.mixture import GaussianMixture
 
-def mixtureOfGaussiansManual(components, bins, theta):
 
-    # TODO -> detect the number of clusters automatically
+def mixtureOfGaussiansManual(components, bins, theta):
+    
+    colors = ["b", "g", "r", "c", "m", "y", "k", "w"]
+
     k = components
     weights = np.ones((k)) / k 
     means = np.random.choice(theta, k)
     variances = np.random.random_sample(size = k)
-    print(means, variances)
+    # print(means, variances)
 
     eps = 1e-8
-    for step in range(25):
+    steps = 100
+    for step in range(100):
 
         likelihood = []
         for j in range(k):
@@ -37,24 +40,23 @@ def mixtureOfGaussiansManual(components, bins, theta):
             # update the weights
             weights[j] = np.mean(b[j])
 
-        if step == 24:
-            plt.figure(figsize=(10,6))
+        if step == steps-1:
+            plt.figure(figsize=(10, 6))
             axes = plt.gca()
-            plt.xlabel("$x$")
+            plt.xlabel("$samples$")
             plt.ylabel("pdf")
-            plt.title("Iteration {}".format(step))
-            plt.scatter(theta, [0.005] * len(theta), color='navy', s=30, marker=2, label="Train data")
+            plt.title("Gaussian mixture model")
+            plt.scatter(theta, [-0.05] * len(theta), color='navy', s=30, marker=2, label="Train data")
 
-            plt.plot(bins, pdf(bins, means[0], variances[0]), color='blue', label="Cluster 1")
-            plt.plot(bins, pdf(bins, means[1], variances[1]), color='green', label="Cluster 2")
-            plt.plot(bins, pdf(bins, means[2], variances[2]), color='magenta', label="Cluster 3")
+            for i in range(components):
+                plt.plot(bins, pdf(bins, means[i], variances[i]), color=colors[i], label="Cluster {0}".format(i+1))
             
             plt.legend(loc='upper left')
             
             # plt.savefig("img_{0:02d}".format(step), bbox_inches='tight')
             plt.show()
 
-    return (None, None, None)
+    return 
 
 def pdf(data, mean: float, variance: float):
   # A normal continuous random variable.
@@ -86,11 +88,14 @@ def mixtureOfGaussiansAutomatic(components, bins, theta):
     labels2 = np.array(labels2)
     labels3 = np.array(labels3)
 
+    '''
     plt.scatter(labels1, [0.005] * len(labels1), color='r', s = 30, marker=2, label="cluster 1")
     plt.scatter(labels2, [0.005] * len(labels2), color='g', s = 30, marker=2, label="cluster 2")
     plt.scatter(labels3, [0.005] * len(labels3), color='b', s = 30, marker=2, label="cluster 3")
 
     plt.legend()
     plt.show()
+
+    '''
 
     return (None, None, None)

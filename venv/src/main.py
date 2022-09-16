@@ -53,9 +53,9 @@ data_plot.plot_scatter(hist_smoothed_weighted, bins, mode=2)
 data_plot.plot_hist(hist_smoothed_weighted, bins)
 '''
 
-# clusters, thetaLabels, centroids = histogram_clustering_hierarchical.hierarchicalDetectionOfClusters(hist, bins, samples, theta)
-# clusters, thetaLabels, centroids = gaussian_mixture_model.mixtureOfGaussiansManual(3, bins, theta)
-clusters, thetaLabels, centroids = gaussian_mixture_model.mixtureOfGaussiansAutomatic(3, bins, theta)
+clusters, thetaLabels, centroids = histogram_clustering_hierarchical.hierarchicalDetectionOfClusters(hist, bins, samples, theta)
+gaussian_mixture_model.mixtureOfGaussiansManual(len(clusters), bins, theta)
+# clusters, thetaLabels, centroids = gaussian_mixture_model.mixtureOfGaussiansAutomatic(3, bins, theta)
 # print(clusters)
 
 # PLOTTING THE THETA WITH COLOURS
