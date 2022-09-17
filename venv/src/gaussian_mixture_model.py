@@ -1,12 +1,17 @@
+from cProfile import label
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn import cluster, datasets, mixture
-from scipy.stats import multivariate_normal
+from scipy.stats import norm
 from pandas import DataFrame
 from sklearn import datasets
 from sklearn.mixture import GaussianMixture
 
+# constants
+PI = np.pi
+PI = np.float32(PI)
 
+######################### IMPLEMENTATION OF MIXTURE OF GAUSSIANS MANUALLY ###########################
 def mixtureOfGaussiansManual(components, bins, theta):
     
     colors = ["b", "g", "r", "c", "m", "y", "k", "w"]
@@ -40,22 +45,20 @@ def mixtureOfGaussiansManual(components, bins, theta):
             # update the weights
             weights[j] = np.mean(b[j])
 
-        if step == steps-1:
-            plt.figure(figsize=(10, 6))
-            axes = plt.gca()
-            plt.xlabel("$samples$")
-            plt.ylabel("pdf")
-            plt.title("Gaussian mixture model")
-            plt.scatter(theta, [-0.05] * len(theta), color='navy', s=30, marker=2, label="Train data")
+    plt.figure(figsize=(10, 6))
+    axes = plt.gca()
+    plt.xlabel("$samples$")
+    plt.ylabel("pdf")
+    plt.title("Gaussian mixture model")
+    plt.scatter(theta, [-0.05] * len(theta), color='navy', s=30, marker=2, label="Train data")
 
-            for i in range(components):
-                plt.plot(bins, pdf(bins, means[i], variances[i]), color=colors[i], label="Cluster {0}".format(i+1))
-            
-            plt.legend(loc='upper left')
-            
-            # plt.savefig("img_{0:02d}".format(step), bbox_inches='tight')
-            plt.show()
-
+    for i in range(components):
+        plt.plot(bins, pdf(bins, means[i], variances[i]), color=colors[i], label="Cluster {0}".format(i+1))
+    
+    plt.legend(loc='upper left')
+    
+    # plt.savefig("img_{0:02d}".format(step), bbox_inches='tight')
+    plt.show()
     return 
 
 def pdf(data, mean: float, variance: float):
@@ -64,12 +67,37 @@ def pdf(data, mean: float, variance: float):
   s2 = np.exp(-(np.square(data - mean)/(2*variance)))
   return s1 * s2
 
+######################### IMPLEMENTATION OF MIXTURE OF GAUSSIANS WITH SKLEARN ########################
+
 def mixtureOfGaussiansAutomatic(components, bins, theta):
     gmm = GaussianMixture(n_components = components)
     thetaReshaped = theta.reshape(-1,1)
     gmm.fit(thetaReshaped)
 
     labels = gmm.predict(thetaReshaped)
+    
+    plt.figure()
+    plt.hist(theta, bins = bins, histtype='stepfilled', density=True, alpha=0.5)
+    plt.xlim(0, 2*PI)
+
+    f_axis = theta.copy().ravel()
+    f_axis.sort()
+
+    a = []
+    for weight, mean, covar in zip(gmm.weights_, gmm.means_, gmm.covariances_):
+        a.append(weight*norm.pdf(f_axis, mean, np.sqrt(covar)).ravel())
+        plt.plot(f_axis, a[-1])
+
+    plt.plot(f_axis , np.array(a).sum(axis = 0), 'k-')
+    plt.title("Gaussian mixture model")
+    plt.xlabel("thetas")
+    plt.ylabel("PDF")
+    plt.tight_layout()
+
+    plt.show()
+    
+    
+    '''
     print(labels)
     plt.figure(figsize=(10,7))
     plt.xlabel("$points$")
@@ -88,7 +116,7 @@ def mixtureOfGaussiansAutomatic(components, bins, theta):
     labels2 = np.array(labels2)
     labels3 = np.array(labels3)
 
-    '''
+    
     plt.scatter(labels1, [0.005] * len(labels1), color='r', s = 30, marker=2, label="cluster 1")
     plt.scatter(labels2, [0.005] * len(labels2), color='g', s = 30, marker=2, label="cluster 2")
     plt.scatter(labels3, [0.005] * len(labels3), color='b', s = 30, marker=2, label="cluster 3")

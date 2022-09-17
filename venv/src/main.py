@@ -20,7 +20,7 @@ console = Console()
 PI = np.pi
 PI = np.float32(PI)
 
-dataset = data_generation.createDatasets(0)
+dataset = data_generation.createDatasets(6)
 samples, labels, n_dataset = dataset[0], dataset[1], dataset[2]
 
 '''CIRCLE CLUSTERING'''
@@ -55,7 +55,8 @@ data_plot.plot_hist(hist_smoothed_weighted, bins)
 
 clusters, thetaLabels, centroids = histogram_clustering_hierarchical.hierarchicalDetectionOfClusters(hist, bins, samples, theta)
 gaussian_mixture_model.mixtureOfGaussiansManual(len(clusters), bins, theta)
-# clusters, thetaLabels, centroids = gaussian_mixture_model.mixtureOfGaussiansAutomatic(3, bins, theta)
+gaussian_mixture_model.mixtureOfGaussiansAutomatic(len(clusters), bins, theta)
+
 # print(clusters)
 
 # PLOTTING THE THETA WITH COLOURS

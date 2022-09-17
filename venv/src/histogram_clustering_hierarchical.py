@@ -190,7 +190,7 @@ def createTreeOfClusters(tree, nbins):
     
     size_bins = nbins.shape[0]-1
     interval = (0, size_bins)
-    print(nbins)
+    
     newTree = AnyNode(name="[" + str(0) + " - " + "2pi" + "]", interval = interval)
     
     stackOfParents = []
