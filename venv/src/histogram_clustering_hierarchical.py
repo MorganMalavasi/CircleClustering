@@ -5,7 +5,7 @@ from anytree import AnyNode
 from anytree.exporter import DotExporter
 from sklearn.neighbors._nearest_centroid import NearestCentroid
 from sklearn.neighbors import KernelDensity
-from utility import rotateHistogram, removeLowPercentageOfNoise, smooth_weighted, removeLowPercentage
+from utility import rotateHistogram, removeLowPercentageOfNoise, smooth_weighted, removeLowPercentage, windowSize
 from scipy.ndimage import gaussian_filter1d
 import data_plot
 import matplotlib.pyplot as plt
@@ -16,17 +16,19 @@ def hierarchicalDetectionOfClusters(hist, bins, samples, theta):
     #############################################################################
     # PRECOMPUTATION ############################################################
     #############################################################################
-
+    print(bins.shape[0])
     # - removing circular problem    
     hist, binsRotated, movement = rotateHistogram(hist, bins)
-    # data_plot.plot_scatter(hist, bins, mode=2)
+    data_plot.plot_scatter(hist, bins, mode=2)
     
     # removing low percentage
     hist = removeLowPercentage(hist)
-    # data_plot.plot_scatter(hist, bins, mode=2)
+    data_plot.plot_scatter(hist, bins, mode=2)
 
     # smoothing
-    hist = gaussian_filter1d(hist, 2)
+    standard_deviation = np.std(samples)
+    print(standard_deviation)
+    hist = gaussian_filter1d(hist, np.std(samples))
     # hist = np.ceil(hist)
     data_plot.plot_scatter(hist, bins, mode=2)
 

@@ -32,6 +32,7 @@ def numberOfBinsFreedmanDiaconisRuleModified(points):
     iqr = q3 - q1
     bin_width = (2 * iqr) / (len(norm_dist) ** (1 / 3))
     bin_count = int(np.ceil((norm_dist.max() - norm_dist.min()) / bin_width))
+    
     nbins = pow(bin_count, 2)
     if nbins < 128:
         nbins = 128 
@@ -205,3 +206,14 @@ def kde(bins, theta):
     # plt.show()
 
     return probabilities
+
+def windowSize(nbins, theta):
+    val128 = 128
+    size = 0
+    # TODO -> il valore della grandezza della finestra non deve essere dato dal numero di bins 
+    # ma da quanto sono rumorosi i dati in ingresso
+    while (val128 <= nbins):
+        val128 *= 2
+        size += 1
+
+    return size

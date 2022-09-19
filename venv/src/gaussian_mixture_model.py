@@ -1,15 +1,10 @@
-from cProfile import label
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn import cluster, datasets, mixture
-from scipy.stats import norm
 from pandas import DataFrame
 from sklearn import datasets
 from sklearn.mixture import GaussianMixture
+from data_plot import drawMixtureOfGaussians
 
-# constants
-PI = np.pi
-PI = np.float32(PI)
 
 ######################### IMPLEMENTATION OF MIXTURE OF GAUSSIANS MANUALLY ###########################
 def mixtureOfGaussiansManual(components, bins, theta):
@@ -74,56 +69,7 @@ def mixtureOfGaussiansAutomatic(components, bins, theta):
     thetaReshaped = theta.reshape(-1,1)
     gmm.fit(thetaReshaped)
 
+    drawMixtureOfGaussians(theta, bins, gmm)
+
     labels = gmm.predict(thetaReshaped)
-    
-    plt.figure()
-    plt.hist(theta, bins = bins, histtype='stepfilled', density=True, alpha=0.5)
-    plt.xlim(0, 2*PI)
-
-    f_axis = theta.copy().ravel()
-    f_axis.sort()
-
-    a = []
-    for weight, mean, covar in zip(gmm.weights_, gmm.means_, gmm.covariances_):
-        a.append(weight*norm.pdf(f_axis, mean, np.sqrt(covar)).ravel())
-        plt.plot(f_axis, a[-1])
-
-    plt.plot(f_axis , np.array(a).sum(axis = 0), 'k-')
-    plt.title("Gaussian mixture model")
-    plt.xlabel("thetas")
-    plt.ylabel("PDF")
-    plt.tight_layout()
-
-    plt.show()
-    
-    
-    '''
-    print(labels)
-    plt.figure(figsize=(10,7))
-    plt.xlabel("$points$")
-    labels1 = []
-    labels2 = []
-    labels3 = []
-    for i in range(theta.shape[0]):
-        if labels[i] == 0:
-            labels1.append(theta[i])
-        if labels[i] == 1:
-            labels2.append(theta[i])
-        if labels[i] == 2:
-            labels3.append(theta[i])
-
-    labels1 = np.array(labels1)
-    labels2 = np.array(labels2)
-    labels3 = np.array(labels3)
-
-    
-    plt.scatter(labels1, [0.005] * len(labels1), color='r', s = 30, marker=2, label="cluster 1")
-    plt.scatter(labels2, [0.005] * len(labels2), color='g', s = 30, marker=2, label="cluster 2")
-    plt.scatter(labels3, [0.005] * len(labels3), color='b', s = 30, marker=2, label="cluster 3")
-
-    plt.legend()
-    plt.show()
-
-    '''
-
-    return (None, None, None)
+    return labels

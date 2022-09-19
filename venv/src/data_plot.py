@@ -3,7 +3,13 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 import matplotlib.pyplot as plt
+from matplotlib.widgets import CheckButtons
 from sklearn.decomposition import PCA
+from scipy.stats import norm
+
+# constants
+PI = np.pi
+PI = np.float32(PI)
 
 
 def doPCA(X, labels, n_dataset):
@@ -207,3 +213,76 @@ def plot_linespace(theta):
     plt.scatter(theta, [0.005] * len(theta), color='navy', s = 30, marker=2, label="theta")
     plt.legend()
     plt.show()
+
+def drawMixtureOfGaussians(theta, bins, gmm):
+    fig, ax = plt.subplots(figsize=(20, 12), dpi=80)
+    fig.subplots_adjust(left=0.2)
+
+    ax.hist(theta, bins = bins, histtype='stepfilled', density=True, alpha=0.5)
+    plt.xlim(0, 2*PI)
+
+    f_axis = theta.copy().ravel()
+    f_axis.sort()
+
+    a = []
+    gaussians = []
+    for weight, mean, covar in zip(gmm.weights_, gmm.means_, gmm.covariances_):
+        a.append(weight*norm.pdf(f_axis, mean, np.sqrt(covar)).ravel())
+        gas, = ax.plot(f_axis, a[-1], label = str(len(gaussians)))
+        gaussians.append(gas)
+
+    sumOfGaus, = ax.plot(f_axis , np.array(a).sum(axis = 0), 'k-', label="Sum Gaussians", visible=False)
+    gaussians.append(sumOfGaus)
+
+    labels = [str(gaussian.get_label()) for gaussian in gaussians]
+    visibility = [gaussian.get_visible() for gaussian in gaussians]
+    rax = fig.add_axes([0.05, 0.4, 0.1, 0.15])
+    check = CheckButtons(rax, labels, visibility)
+
+    def func(label):
+        index = labels.index(label)
+        gaussians[index].set_visible(not gaussians[index].get_visible())
+        plt.draw()
+    
+    check.on_clicked(func)
+
+    
+    ax.set_title("Gaussian mixture model")
+    ax.set_xlabel("thetas")
+    ax.set_ylabel("PDF")
+    # plt.tight_layout()
+    # plt.legend(loc='upper right')
+
+    plt.show()
+    
+    
+    '''
+    print(labels)
+    plt.figure(figsize=(10,7))
+    plt.xlabel("$points$")
+    labels1 = []
+    labels2 = []
+    labels3 = []
+    for i in range(theta.shape[0]):
+        if labels[i] == 0:
+            labels1.append(theta[i])
+        if labels[i] == 1:
+            labels2.append(theta[i])
+        if labels[i] == 2:
+            labels3.append(theta[i])
+
+    labels1 = np.array(labels1)
+    labels2 = np.array(labels2)
+    labels3 = np.array(labels3)
+
+    
+    plt.scatter(labels1, [0.005] * len(labels1), color='r', s = 30, marker=2, label="cluster 1")
+    plt.scatter(labels2, [0.005] * len(labels2), color='g', s = 30, marker=2, label="cluster 2")
+    plt.scatter(labels3, [0.005] * len(labels3), color='b', s = 30, marker=2, label="cluster 3")
+
+    plt.legend()
+    plt.show()
+
+    '''
+
+    return (None, None, None)
