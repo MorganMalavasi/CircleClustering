@@ -1,6 +1,4 @@
-- remove the noise under a threashold
-- correct rotation
+- see to correct rotation also in gaussians mixture model 
 - ?????? find the correct window for smoothing the data with the gaussian ???????
 
-- implement the gaussian mixture model and detect where a point finishes
 - try to descretize the space of [0, 2PI]
