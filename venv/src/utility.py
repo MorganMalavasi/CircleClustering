@@ -36,6 +36,8 @@ def numberOfBinsFreedmanDiaconisRuleModified(points):
     nbins = pow(bin_count, 2)
     if nbins < 128:
         nbins = 128 
+
+    print("Number of bins = {0}".format(nbins))
     return nbins
 
 

@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from itertools import chain
 from pandas import DataFrame
 from sklearn import datasets
 from sklearn.mixture import GaussianMixture
@@ -64,12 +65,31 @@ def pdf(data, mean: float, variance: float):
 
 ######################### IMPLEMENTATION OF MIXTURE OF GAUSSIANS WITH SKLEARN ########################
 
-def mixtureOfGaussiansAutomatic(components, bins, theta):
-    gmm = GaussianMixture(n_components = components)
-    thetaReshaped = theta.reshape(-1,1)
-    gmm.fit(thetaReshaped)
+def mixtureOfGaussiansAutomatic(k, bins, theta):
+    # evaluate the best model for the gaussian mixture using bic 
+    # we check in the neighbours of the k found
+    lowest_bic = np.infty
+    bic = []
+    n_components_range_lower = range(k-2, k)
+    n_components_range_higher = range(k, k+3)
+    n_components_range = chain(n_components_range_lower, n_components_range_higher)
 
-    drawMixtureOfGaussians(theta, bins, gmm)
+    print("----------------")
+    for i in n_components_range:
+        if i < 0:
+            continue
+        gmm = GaussianMixture(n_components = i)
+        thetaReshaped = theta.reshape(-1,1)
+        gmm.fit(thetaReshaped)
+        bic.append(gmm.bic(thetaReshaped))
+        print("Nr. components : {0}, bic = {1}".format(i, bic[-1]))
+        if bic[-1] < lowest_bic:
+            lowest_bic = bic[-1]
+            best_gmm = gmm
+    print("----------------")
 
-    labels = gmm.predict(thetaReshaped)
+
+    drawMixtureOfGaussians(theta, bins, best_gmm)
+
+    labels = best_gmm.predict(thetaReshaped)
     return labels
