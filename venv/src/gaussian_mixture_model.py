@@ -1,3 +1,6 @@
+import sys
+from random import sample
+from tkinter import N
 import numpy as np
 import matplotlib.pyplot as plt
 from itertools import chain
@@ -5,6 +8,8 @@ from pandas import DataFrame
 from sklearn import datasets
 from sklearn.mixture import GaussianMixture
 from data_plot import drawMixtureOfGaussians
+import metrics
+from utility import find_max_repeating_number_in_array_using_count
 
 
 ######################### IMPLEMENTATION OF MIXTURE OF GAUSSIANS MANUALLY ###########################
@@ -65,21 +70,35 @@ def pdf(data, mean: float, variance: float):
 
 ######################### IMPLEMENTATION OF MIXTURE OF GAUSSIANS WITH SKLEARN ########################
 
-def mixtureOfGaussiansAutomatic(k, bins, theta):
+def mixtureOfGaussiansAutomatic(k, bins, samples, theta):
+    thetaReshaped = theta.reshape(-1,1)
+
     # evaluate the best model for the gaussian mixture using bic 
-    # we check in the neighbours of the k found
-    lowest_bic = np.infty
-    bic = []
+    # we cx\heck in the neighbours of the k found
     n_components_range_lower = range(k-2, k)
     n_components_range_higher = range(k, k+3)
+    
+    # method1 
     n_components_range = chain(n_components_range_lower, n_components_range_higher)
+    best_gmm = decisionBasedOnBic(n_components_range, thetaReshaped)
+    # method2
+    n_components_range = chain(n_components_range_lower, n_components_range_higher)
+    best_gmm2 = decisionBasedOnMultipleFactors(n_components_range, samples, thetaReshaped)
+    print(best_gmm2)
 
+    drawMixtureOfGaussians(theta, bins, best_gmm)
+
+    labels = best_gmm.predict(thetaReshaped)
+    return labels
+
+def decisionBasedOnBic(n_components_range, thetaReshaped):
     print("----------------")
+    lowest_bic = np.infty
+    bic = []
     for i in n_components_range:
         if i < 0:
             continue
         gmm = GaussianMixture(n_components = i)
-        thetaReshaped = theta.reshape(-1,1)
         gmm.fit(thetaReshaped)
         bic.append(gmm.bic(thetaReshaped))
         print("Nr. components : {0}, bic = {1}".format(i, bic[-1]))
@@ -87,9 +106,44 @@ def mixtureOfGaussiansAutomatic(k, bins, theta):
             lowest_bic = bic[-1]
             best_gmm = gmm
     print("----------------")
+    return best_gmm
 
+def decisionBasedOnMultipleFactors(n_components_range, samples, thetaReshaped):
+    # the decision is taken based on multiple internal validity index
+    index = []
+    for i in n_components_range:
+        if i < 0:
+            continue
+        
+        gmm = GaussianMixture(n_components=i)
+        gmm.fit(thetaReshaped)
+        labels = gmm.predict(thetaReshaped)
+        
+        # silhouette
+        score_silhouette = metrics.silhouette(samples, labels)
+        score_calinski = metrics.calinski(samples, labels)
+        score_dunn = metrics.dunn_fast(samples, labels)
+        index.append((i, [score_silhouette, score_calinski, score_dunn]))
 
-    drawMixtureOfGaussians(theta, bins, best_gmm)
+    howManyCluster = []
+    for j in range(len(index[0][1])):
+        stack = []
+        for i in range(len(index)):
+            row = index[i]
+            cl = row[0]
+            val = row[1][j]
+            stack.append((cl, val))
+        
+        cl = -sys.maxsize
+        max_val = -sys.maxsize
+        for eachTuple in stack:
+            if eachTuple[1] > max_val:
+                max_val = eachTuple[1]
+                cl = eachTuple[0]
 
-    labels = best_gmm.predict(thetaReshaped)
-    return labels
+        howManyCluster.append(cl)
+    print(howManyCluster)
+    return find_max_repeating_number_in_array_using_count(howManyCluster)
+        
+            
+

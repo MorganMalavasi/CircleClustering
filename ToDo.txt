@@ -1,4 +1,15 @@
+- trovare delle misure di fitting con bic e aic 
+    - implementare aic 
 - see to correct rotation also in gaussians mixture model 
 - ?????? find the correct window for smoothing the data with the gaussian ???????
 
 - try to descretize the space of [0, 2PI]
+
+
+
+- riguardare algo della rotazione per trovare l'intervallo piu lungo e ruotare meglio i valori 
+    - devono ruotare anche per la mistura di gaussiane
+
+- vedi letteratura per la generazione di benchmark per il clustering 
+- fare test 
+- algoritmi per la stima di k -> studio e confronto     

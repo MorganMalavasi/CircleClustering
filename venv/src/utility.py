@@ -1,3 +1,4 @@
+from array import array
 import sys
 import numpy as np
 import pandas as pd
@@ -219,3 +220,24 @@ def windowSize(nbins, theta):
         size += 1
 
     return size
+
+
+
+# get the value with more repetition in an array 
+def find_max_repeating_number_in_array_using_count(arr):
+    
+    clusters = -1
+    max_rep = 0
+    for i in range(len(arr)):
+        elementToCheck = arr[i]
+        
+        counter = 0
+        for j in range(len(arr)):
+            if elementToCheck == arr[j]:
+                counter += 1
+        
+        if counter > max_rep:
+            max_rep = counter
+            clusters = elementToCheck
+    
+    return clusters
