@@ -110,7 +110,9 @@ def decisionBasedOnBic(n_components_range, thetaReshaped):
 
 def decisionBasedOnMultipleFactors(n_components_range, samples, thetaReshaped):
     # the decision is taken based on multiple internal validity index
-    index = []
+    index_major = []
+    index_minor = []
+    howManyClusters = []
     for i in n_components_range:
         if i < 0:
             continue
@@ -119,13 +121,25 @@ def decisionBasedOnMultipleFactors(n_components_range, samples, thetaReshaped):
         gmm.fit(thetaReshaped)
         labels = gmm.predict(thetaReshaped)
         
-        # silhouette
         score_silhouette = metrics.silhouette(samples, labels)
         score_calinski = metrics.calinski(samples, labels)
         score_dunn = metrics.dunn_fast(samples, labels)
-        index.append((i, [score_silhouette, score_calinski, score_dunn]))
+        index_major.append((i, [score_silhouette, score_calinski, score_dunn]))
 
-    howManyCluster = []
+        score_bic = gmm.bic(thetaReshaped)
+        score_widest_within_cluster_gap = metrics.widest_within_cluster_gap_formula(samples, labels)
+        index_minor.append((i, [score_bic, score_widest_within_cluster_gap]))
+
+    print(index_minor)
+
+    computeIndex(index_major, howManyClusters, major_minor=True)
+    computeIndex(index_minor, howManyClusters, major_minor=False)
+    
+    print(howManyClusters)
+    return find_max_repeating_number_in_array_using_count(howManyClusters)
+        
+            
+def computeIndex(index, howManyClusters, major_minor = True):
     for j in range(len(index[0][1])):
         stack = []
         for i in range(len(index)):
@@ -134,16 +148,23 @@ def decisionBasedOnMultipleFactors(n_components_range, samples, thetaReshaped):
             val = row[1][j]
             stack.append((cl, val))
         
-        cl = -sys.maxsize
-        max_val = -sys.maxsize
-        for eachTuple in stack:
-            if eachTuple[1] > max_val:
-                max_val = eachTuple[1]
-                cl = eachTuple[0]
+        if (major_minor):
+            cl = -sys.maxsize
+            max_val = -sys.maxsize
+            for eachTuple in stack:
+                if eachTuple[1] > max_val:
+                    max_val = eachTuple[1]
+                    cl = eachTuple[0]
 
-        howManyCluster.append(cl)
-    print(howManyCluster)
-    return find_max_repeating_number_in_array_using_count(howManyCluster)
+            howManyClusters.append(cl)
         
-            
+        else:
+            cl = sys.maxsize
+            min_val = sys.maxsize
+            for eachTuple in stack:
+                if eachTuple[1] < min_val:
+                    min_val = eachTuple[1]
+                    cl = eachTuple[0]
 
+            howManyClusters.append(cl)
+        

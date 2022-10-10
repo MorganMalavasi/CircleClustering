@@ -1,5 +1,6 @@
-from sklearn import metrics
+import subprocess, os, csv
 import numpy as np
+from sklearn import metrics
 from sklearn.metrics.pairwise import euclidean_distances
 
 def silhouette(samples, labels):
@@ -135,3 +136,104 @@ def davisbouldin(k_list, k_centers):
         db += np.max(values)
     res = db/len_k_list
     return res
+
+
+def widest_within_cluster_gap_formula(samples, labels):
+    # Defining the R script and loading the instance in Python
+    createFile(samples, labels)
+    score = command_wwcg()
+    deleteFile()        
+
+    return score
+
+def createFile(samples, labels, cvnn = False, labels2 = None):    
+    path_to_file_samples = 'analysis/cqcluster/k_means_input.csv'
+    
+    # printMatrix(samples, labels)
+    
+    with open(path_to_file_samples, "w") as csvfile:
+        csvwriter = csv.writer(csvfile)
+        
+        for i in range (samples.shape[0]):
+            if i == 0:
+                size = samples.shape[1]
+                write_col_of_Data_frame(csvwriter, size)
+            
+            row = samples[i,:]
+            csvwriter.writerow(row)
+
+    path_to_file_labels = 'analysis/cqcluster/labels_input.csv'
+
+    with open(path_to_file_labels, "w") as csvfile:
+        csvwriter = csv.writer(csvfile)
+
+        for i in range(labels.shape[0]):
+            if i == 0:
+                size = 1
+                write_col_of_Data_frame(csvwriter, size)
+            
+            row = [labels[i] + 1]
+            csvwriter.writerow(row)
+
+    if cvnn:
+        path_to_file_labels2 = 'analysis/cqcluster/labels_input_2.csv'
+
+        with open(path_to_file_labels2, "w") as csvfile:
+            csvwriter = csv.writer(csvfile)
+
+            for i in range(labels2.shape[0]):
+                if i == 0:
+                    size = 1
+                    write_col_of_Data_frame(csvwriter, size)
+                
+                row = [int(labels2[i]) + 1]
+                csvwriter.writerow(row)
+    return 
+
+def write_col_of_Data_frame(csvwriter, size):
+    myTuple = []
+    for k in range(size):
+        myTuple.append(str(k)) 
+        
+    # print(myTuple)
+                
+    csvwriter.writerow(myTuple)
+
+def deleteFile():
+    if os.path.exists("analysis/cqcluster/k_means_input.csv"):
+        os.remove("analysis/cqcluster/k_means_input.csv")
+    if os.path.exists("analysis/cqcluster/labels_input.csv"):
+        os.remove("analysis/cqcluster/labels_input.csv")
+    if os.path.exists("analysis/cqcluster/labels_input_2.csv"):
+        os.remove("analysis/cqcluster/labels_input_2.csv")
+    return 
+
+def command_wwcg():
+    command = 'Rscript'
+    # command = 'Rscript'                    # OR WITH bin FOLDER IN PATH ENV VAR 
+    arg = '--vanilla' 
+
+    try: 
+        p = subprocess.Popen([command, arg,
+                            "analysis/cqcluster/widest_within_cluster_gap.R"],
+                            cwd = os.getcwd(),
+                            stdin = subprocess.PIPE, 
+                            stdout = subprocess.PIPE, 
+                            stderr = subprocess.PIPE) 
+
+        output, error = p.communicate() 
+
+        if p.returncode == 0: 
+            # print('R OUTPUT:\n {0}'.format(output.decode("utf-8"))) 
+            out = output.decode("utf-8")
+            out = out.replace('[1]', '')
+            return float(out)
+        else: 
+            print('R ERROR:\n {0}'.format(error.decode("utf-8"))) 
+            return None
+
+    except Exception as e: 
+        print("dbc2csv - Error converting file: ") 
+        print(e)
+
+        return False
