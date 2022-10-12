@@ -134,7 +134,10 @@ def decisionBasedOnMultipleFactors(n_components_range, samples, thetaReshaped):
     computeIndex(index_minor, howManyClusters, major_minor=False)
     
     print(howManyClusters)
-    return find_max_repeating_number_in_array_using_count(howManyClusters)
+    max_repeating_number_in_array = find_max_repeating_number_in_array_using_count(howManyClusters)
+    average_of_clusters_index = round(np.average(np.array(howManyClusters)))
+
+    return max_repeating_number_in_array
         
             
 def computeIndex(index, howManyClusters, major_minor = True):
