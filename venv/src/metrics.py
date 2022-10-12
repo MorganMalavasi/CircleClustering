@@ -143,7 +143,12 @@ def widest_within_cluster_gap_formula(samples, labels):
     createFile(samples, labels)
     score = command_wwcg()
     deleteFile()        
+    return score
 
+def pearson(samples, labels):
+    createFile(samples, labels)
+    score = command_pearson()
+    deleteFile()
     return score
 
 def createFile(samples, labels, cvnn = False, labels2 = None):    
@@ -216,6 +221,36 @@ def command_wwcg():
     try: 
         p = subprocess.Popen([command, arg,
                             "analysis/cqcluster/widest_within_cluster_gap.R"],
+                            cwd = os.getcwd(),
+                            stdin = subprocess.PIPE, 
+                            stdout = subprocess.PIPE, 
+                            stderr = subprocess.PIPE) 
+
+        output, error = p.communicate() 
+
+        if p.returncode == 0: 
+            # print('R OUTPUT:\n {0}'.format(output.decode("utf-8"))) 
+            out = output.decode("utf-8")
+            out = out.replace('[1]', '')
+            return float(out)
+        else: 
+            print('R ERROR:\n {0}'.format(error.decode("utf-8"))) 
+            return None
+
+    except Exception as e: 
+        print("dbc2csv - Error converting file: ") 
+        print(e)
+
+        return False
+
+def command_pearson():
+    command = 'Rscript'
+    # command = 'Rscript'                    # OR WITH bin FOLDER IN PATH ENV VAR 
+    arg = '--vanilla' 
+
+    try: 
+        p = subprocess.Popen([command, arg,
+                            "analysis/cqcluster/pearson.R"],
                             cwd = os.getcwd(),
                             stdin = subprocess.PIPE, 
                             stdout = subprocess.PIPE, 

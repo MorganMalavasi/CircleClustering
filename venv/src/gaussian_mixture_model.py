@@ -4,8 +4,6 @@ from tkinter import N
 import numpy as np
 import matplotlib.pyplot as plt
 from itertools import chain
-from pandas import DataFrame
-from sklearn import datasets
 from sklearn.mixture import GaussianMixture
 from data_plot import drawMixtureOfGaussians
 import metrics
@@ -124,7 +122,8 @@ def decisionBasedOnMultipleFactors(n_components_range, samples, thetaReshaped):
         score_silhouette = metrics.silhouette(samples, labels)
         score_calinski = metrics.calinski(samples, labels)
         score_dunn = metrics.dunn_fast(samples, labels)
-        index_major.append((i, [score_silhouette, score_calinski, score_dunn]))
+        score_pearson = metrics.pearson(samples, labels)
+        index_major.append((i, [score_silhouette, score_calinski, score_dunn, score_pearson]))
 
         score_bic = gmm.bic(thetaReshaped)
         score_widest_within_cluster_gap = metrics.widest_within_cluster_gap_formula(samples, labels)

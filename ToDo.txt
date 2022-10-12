@@ -1,5 +1,4 @@
-- implementare altri validity index 
-    - possibilità di scegliere tra media oppure contare il numero di occorrenze per selezionare
+- possibilità di scegliere tra media oppure contare il numero di occorrenze per selezionare
     il numero corretto di cluster
 - trovare delle misure di fitting con bic e aic 
     - implementare aic 
