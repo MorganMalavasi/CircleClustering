@@ -15,3 +15,5 @@
 - vedi letteratura per la generazione di benchmark per il clustering 
 - fare test 
 - algoritmi per la stima di k -> studio e confronto     
+
+- rendere il cancolo degli indici parallelo tra di loro

@@ -19,18 +19,18 @@ def hierarchicalDetectionOfClusters(hist, bins, samples, theta):
     
     # - removing circular problem    
     hist, binsRotated, movement = rotateHistogram(hist, bins)
-    data_plot.plot_scatter(hist, bins, mode=2)
+    # data_plot.plot_scatter(hist, bins, mode=2)
     
     # removing low percentage
     hist = removeLowPercentage(hist)
-    data_plot.plot_scatter(hist, bins, mode=2)
+    # data_plot.plot_scatter(hist, bins, mode=2)
 
     # smoothing
     standard_deviation = np.std(samples)
     print("Window size = {0}".format(standard_deviation))
     hist = gaussian_filter1d(hist, np.std(samples))
     # hist = np.ceil(hist)
-    data_plot.plot_scatter(hist, bins, mode=2)
+    # data_plot.plot_scatter(hist, bins, mode=2)
 
     #############################################################################
     # TREE BUILDING #############################################################
@@ -54,7 +54,7 @@ def getClustersFromHistogram(heights, nbins, nbinsRotated):
 
     detectClusters(tree)        
     newTree = createTreeOfClusters(tree, nbinsRotated)
-    DotExporter(newTree).to_picture("img/clusters.png")
+    # DotExporter(newTree).to_picture("img/clusters.png")
     
     # each cluster is a tuple that indicates the number of the cluster and the interval of membership
     clusters = searchClusters(newTree, nbinsRotated)

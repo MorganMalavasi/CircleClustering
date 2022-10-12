@@ -84,7 +84,8 @@ def mixtureOfGaussiansAutomatic(k, bins, samples, theta):
     best_gmm2 = decisionBasedOnMultipleFactors(n_components_range, samples, thetaReshaped)
     print(best_gmm2)
 
-    drawMixtureOfGaussians(theta, bins, best_gmm)
+    # draw with plot the mixture of Gaussians 
+    # drawMixtureOfGaussians(theta, bins, best_gmm)
 
     labels = best_gmm.predict(thetaReshaped)
     return labels
@@ -128,8 +129,6 @@ def decisionBasedOnMultipleFactors(n_components_range, samples, thetaReshaped):
         score_bic = gmm.bic(thetaReshaped)
         score_widest_within_cluster_gap = metrics.widest_within_cluster_gap_formula(samples, labels)
         index_minor.append((i, [score_bic, score_widest_within_cluster_gap]))
-
-    print(index_minor)
 
     computeIndex(index_major, howManyClusters, major_minor=True)
     computeIndex(index_minor, howManyClusters, major_minor=False)
