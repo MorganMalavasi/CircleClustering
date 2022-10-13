@@ -95,7 +95,7 @@ def decisionBasedOnBic(n_components_range, thetaReshaped):
     lowest_bic = np.infty
     bic = []
     for i in n_components_range:
-        if i < 0:
+        if i <= 1:
             continue
         gmm = GaussianMixture(n_components = i)
         gmm.fit(thetaReshaped)
@@ -113,7 +113,7 @@ def decisionBasedOnMultipleFactors(n_components_range, samples, thetaReshaped):
     index_minor = []
     howManyClusters = []
     for i in n_components_range:
-        if i < 0:
+        if i <= 1:
             continue
         
         gmm = GaussianMixture(n_components=i)

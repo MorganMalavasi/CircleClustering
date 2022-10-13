@@ -10,10 +10,6 @@ def calinski(samples, labels):
     return metrics.calinski_harabasz_score(X=samples, labels=labels)
 
 
-
-
-
-
 def delta(ck, cl):
     values = np.ones([len(ck), len(cl)])*10000
     

@@ -1,0 +1,56 @@
+Metadata-Version: 2.1
+Name: clustering-benchmarks
+Version: 1.1.1
+Summary: A Framework for Benchmarking Clustering Algorithms
+Home-page: https://clustering-benchmarks.gagolewski.com/
+Author: Marek Gagolewski
+Author-email: marek@gagolewski.com
+Maintainer: Marek Gagolewski
+License: GNU Affero General Public License v3
+Download-URL: https://github.com/gagolews/clustering-benchmarks
+Project-URL: Bug Tracker, https://github.com/gagolews/clustering-benchmarks/issues
+Project-URL: Documentation, https://clustering-benchmarks.gagolewski.com/
+Project-URL: Source Code, https://github.com/gagolews/clustering-benchmarks
+Platform: UNKNOWN
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: Unix
+Classifier: Operating System :: MacOS
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: GNU Affero General Public License v3
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Topic :: Scientific/Engineering
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: genieclust
+Requires-Dist: matplotlib
+Requires-Dist: natsort
+Requires-Dist: numpy
+Requires-Dist: pandas
+Requires-Dist: scipy
+
+# A Framework for Benchmarking Clustering Algorithms
+
+Maintained/edited/authored by [Marek Gagolewski](https://www.gagolewski.com).
+
+This project aims to:
+
+* **aggregate, polish, and standardise the existing clustering benchmark
+    batteries** referred to across the machine learning and data mining
+    literature,
+* introduce **new datasets** of different dimensionalities,
+    sizes, and cluster types,
+* propose a **consistent methodology** for evaluating clustering algorithms.
+
+See <https://clustering-benchmarks.gagolewski.com/> for a detailed description.
+
+**How to cite**:
+Gagolewski M., *A framework for benchmarking clustering algorithms*,
+2022, <https://clustering-benchmarks.gagolewski.com>,
+DOI: [10.48550/arXiv.2209.09493](https://doi.org/10.48550/arXiv.2209.09493),
+under review (preprint).
+
+
