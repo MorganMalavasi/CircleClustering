@@ -6,6 +6,8 @@ from rich.console import Console
 import engine
 import clustbench
 import sklearn.metrics as metrics
+import sklearn.cluster as clustering_sklearn
+import genieclust
 
 os.environ["KMP_WARNINGS"] = "FALSE" 
 
@@ -48,8 +50,41 @@ def main():
             benchmark = clustbench.load_dataset(eachBatteryName, eachDatasetName, path=data_path)
             X = benchmark.data
             y_true = benchmark.labels[0]
+            correct_number_of_clusters = max(y_true)
             print("Dataset size {0}".format(len(X)))
-            y_pred = engine.CircleClustering(X)
+
+            # Circle Clustering
+            y_pred_circle_clustering = engine.CircleClustering(X) + 1
+
+            # k-means
+            y_pred_k_means = clustering_sklearn.KMeans(correct_number_of_clusters).fit(X).labels_ + 1
+
+            # affinity propagation
+            y_pred_affinity_propagation = clustering_sklearn.AffinityPropagation().fit(X).labels_ + 1
+
+            # mean shift
+            y_pred_mean_shift = clustering_sklearn.MeanShift().fit(X).labels_
+
+            # genie
+            y_pred_genie = genieclust.Genie(n_clusters=correct_number_of_clusters).fit_predict(X) + 1
+
+            # hierarchical clustering
+            # - ward
+            # - average linkage
+            # - complete linkage
+            # - ward linkage
+
+            # dbscan
+
+            # optics
+
+            # birch
+
+            # spectral clustering
+
+            # dbscan
+
+            # optics
 
         break
 
