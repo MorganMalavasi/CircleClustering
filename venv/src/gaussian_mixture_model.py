@@ -78,17 +78,15 @@ def mixtureOfGaussiansAutomatic(k, bins, samples, theta):
     
     # method1 
     n_components_range = chain(n_components_range_lower, n_components_range_higher)
-    best_gmm = decisionBasedOnBic(n_components_range, thetaReshaped)
+    labelsDecisionBasedOnBic = decisionBasedOnBic(n_components_range, thetaReshaped)
     # method2
     n_components_range = chain(n_components_range_lower, n_components_range_higher)
-    best_gmm2 = decisionBasedOnMultipleFactors(n_components_range, samples, thetaReshaped)
-    print(best_gmm2)
+    labelsdecisionBasedOnMultipleFactors = decisionBasedOnMultipleFactors(n_components_range, samples, thetaReshaped)
 
     # draw with plot the mixture of Gaussians 
     # drawMixtureOfGaussians(theta, bins, best_gmm)
 
-    labels = best_gmm.predict(thetaReshaped)
-    return labels
+    return labelsdecisionBasedOnMultipleFactors
 
 def decisionBasedOnBic(n_components_range, thetaReshaped):
     print("----------------")
@@ -105,13 +103,15 @@ def decisionBasedOnBic(n_components_range, thetaReshaped):
             lowest_bic = bic[-1]
             best_gmm = gmm
     print("----------------")
-    return best_gmm
+    labels = best_gmm.predict(thetaReshaped)
+    return labels
 
 def decisionBasedOnMultipleFactors(n_components_range, samples, thetaReshaped):
     # the decision is taken based on multiple internal validity index
     index_major = []
     index_minor = []
     howManyClusters = []
+    dictClustersLabels = {}
     for i in n_components_range:
         if i <= 1:
             continue
@@ -119,6 +119,7 @@ def decisionBasedOnMultipleFactors(n_components_range, samples, thetaReshaped):
         gmm = GaussianMixture(n_components=i)
         gmm.fit(thetaReshaped)
         labels = gmm.predict(thetaReshaped)
+        dictClustersLabels[i] = labels
         
         score_silhouette = metrics.silhouette(samples, labels)
         score_calinski = metrics.calinski(samples, labels)
@@ -137,7 +138,9 @@ def decisionBasedOnMultipleFactors(n_components_range, samples, thetaReshaped):
     max_repeating_number_in_array = find_max_repeating_number_in_array_using_count(howManyClusters)
     average_of_clusters_index = round(np.average(np.array(howManyClusters)))
 
-    return max_repeating_number_in_array
+    nr_clusters = max_repeating_number_in_array
+
+    return dictClustersLabels.get(nr_clusters)
         
             
 def computeIndex(index, howManyClusters, major_minor = True):
