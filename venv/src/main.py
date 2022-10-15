@@ -1,5 +1,5 @@
 import os
-from tkinter import Y
+from multiprocessing import Process, Queue
 import numpy as np
 import matplotlib.pyplot as plt
 from rich.console import Console
@@ -49,24 +49,25 @@ def main():
             print("- {0}".format(eachDatasetName))
             benchmark = clustbench.load_dataset(eachBatteryName, eachDatasetName, path=data_path)
             X = benchmark.data
-            y_true = benchmark.labels[0]
+            y_true = benchmark.labels[1]
             correct_number_of_clusters = max(y_true)
             print("Dataset size {0}".format(len(X)))
 
+            results = []
             # Circle Clustering
-            y_pred_circle_clustering = engine.CircleClustering(X) + 1
+            results.append((engine.CircleClustering(X) + 1, "CircleClustering"))
 
             # k-means
-            y_pred_k_means = clustering_sklearn.KMeans(correct_number_of_clusters).fit(X).labels_ + 1
+            results.append((clustering_sklearn.KMeans(correct_number_of_clusters).fit(X).labels_ + 1, "Kmeans"))
 
             # affinity propagation
-            y_pred_affinity_propagation = clustering_sklearn.AffinityPropagation().fit(X).labels_ + 1
+            results.append((clustering_sklearn.AffinityPropagation().fit(X).labels_ + 1, "Affinity propagation"))
 
             # mean shift
-            y_pred_mean_shift = clustering_sklearn.MeanShift().fit(X).labels_
+            results.append((clustering_sklearn.MeanShift().fit(X).labels_ + 1, "Meanshoft"))
 
             # genie
-            y_pred_genie = genieclust.Genie(n_clusters=correct_number_of_clusters).fit_predict(X) + 1
+            results.append((genieclust.Genie(n_clusters=correct_number_of_clusters).fit_predict(X) + 1, "Genie"))
 
             # hierarchical clustering
             # - ward
@@ -85,6 +86,17 @@ def main():
             # dbscan
 
             # optics
+
+
+            '''
+                Computing the score of the samples 
+            '''
+            for res in results:
+                score_rand_index = metrics.adjusted_rand_score(y_true, res[0])
+                mutual_score = metrics.adjusted_mutual_info_score(y_true, res[0])
+
+                print("Score alg {0} = {1} , {2}".format(res[1], score_rand_index, mutual_score))
+                
 
         break
 
@@ -121,6 +133,35 @@ def main():
     # engine.CircleClustering(samples, labels, n_dataset)
 
     '''
+
+def doClustering(whatClustering, correct_number_of_clusters, X, queue):
+    '''
+    switch={
+        # 1: (engine.CircleClustering(X) + 1, "CircleClustering"),        # -> returns error
+        2: (clustering_sklearn.KMeans(correct_number_of_clusters).fit(X).labels_ + 1, "KMeans"),
+        3: (clustering_sklearn.AffinityPropagation().fit(X).labels_ + 1, "Affinity propagation"),
+        4: (clustering_sklearn.MeanShift().fit(X).labels_ + 1, "MeanShift"),
+        5: (genieclust.Genie(n_clusters=correct_number_of_clusters).fit_predict(X) + 1, "Genie")
+        # ...
+    }   
+    '''
+
+    if whatClustering == 2:
+        name = "KMeans"
+        res = clustering_sklearn.KMeans(correct_number_of_clusters).fit(X).labels_ + 1
+    elif whatClustering == 3:
+        name = "Affinity Propagation"
+        res = clustering_sklearn.AffinityPropagation().fit(X).labels_ + 1
+    elif whatClustering == 4:
+        name = "Meanshift"
+        res = clustering_sklearn.MeanShift().fit(X).labels_ + 1
+    elif whatClustering == 5:
+        name = "Genie"
+        res = genieclust.Genie(n_clusters=correct_number_of_clusters).fit_predict(X) + 1
+
+    print("{0} terminated".format(whatClustering));
+    queue.put((name, res))
+
 
 if __name__ == "__main__":
     main()

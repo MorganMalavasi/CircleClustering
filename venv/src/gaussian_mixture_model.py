@@ -77,8 +77,11 @@ def mixtureOfGaussiansAutomatic(k, bins, samples, theta):
     n_components_range_higher = range(k, k+3)
     
     # method1 
+    '''
     n_components_range = chain(n_components_range_lower, n_components_range_higher)
     labelsDecisionBasedOnBic = decisionBasedOnBic(n_components_range, thetaReshaped)
+    '''
+
     # method2
     n_components_range = chain(n_components_range_lower, n_components_range_higher)
     labelsdecisionBasedOnMultipleFactors = decisionBasedOnMultipleFactors(n_components_range, samples, thetaReshaped)
@@ -134,7 +137,7 @@ def decisionBasedOnMultipleFactors(n_components_range, samples, thetaReshaped):
     computeIndex(index_major, howManyClusters, major_minor=True)
     computeIndex(index_minor, howManyClusters, major_minor=False)
     
-    print(howManyClusters)
+    # print(howManyClusters)
     max_repeating_number_in_array = find_max_repeating_number_in_array_using_count(howManyClusters)
     average_of_clusters_index = round(np.average(np.array(howManyClusters)))
 
