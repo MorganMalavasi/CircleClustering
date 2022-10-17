@@ -13,36 +13,39 @@ from scipy.stats import norm
 PI = np.pi
 PI = np.float32(PI)
 
-def doPCA(X, labels, dataset_name):
-
+def doPCA(X, labels, dataset_name, comment = None, isExample = False):
+    #  print("Score alg {0} = {1} , {2}".format(res[1], score_rand_index, mutual_score))
     if X.shape[1] > 2:
-        return doPCA3D(X, labels, dataset_name)
+        pca = PCA(n_components=3)
+        components = pca.fit_transform(X)
+        fig = px.scatter_3d(components, x = 0, y = 1, z = 2, title = 'Blobs', color=labels, labels={'0': 'PC 1', '1': 'PC 2', '2': 'PC 3'})
+    else :
+        pca = PCA(n_components=2)
+        components = pca.fit_transform(X)
+        fig = px.scatter(components, x = 0, y = 1, title = 'Blobs', color=labels, labels={'0': 'PC 1', '1': 'PC 2'})
 
-    pca = PCA(n_components=2)
-    components = pca.fit_transform(X)
-    fig = px.scatter(components, x = 0, y = 1, title = 'Blobs', color=labels, labels={'0': 'PC 1', '1': 'PC 2'})
     fig.update_layout(
-        width = 600,
+        width = 1000,
         height = 600,
-        title = 'Dataset name {0} - samples = {1} - features = {2} - classes = {3}'.format(dataset_name, X.shape[0], X.shape[1], np.max(labels) + 1))
+        title = 'Dataset name {0} - samples = {1} - features = {2} - classes = {3}'.format(dataset_name, X.shape[0], X.shape[1], np.max(labels))
+    )
     fig.update_yaxes(
         scaleanchor = "x",
-        scaleratio = 1)
+        scaleratio = 1
+    )
+    
+    if not isExample:
+        fig.add_annotation(
+            text=comment,
+            x = -0.04,
+            y = -0.1,
+            font=dict(
+                family="Times New Roman",
+                size=20
+            ),
+            showarrow=False
+        )
     return fig
-
-def doPCA3D(X, labels, dataset_name):
-    pca = PCA(n_components=3)
-    components = pca.fit_transform(X)
-    fig = px.scatter_3d(components, x = 0, y = 1, z = 2, title = 'Blobs', color=labels, labels={'0': 'PC 1', '1': 'PC 2', '2': 'PC 3'})
-    fig.update_layout(
-        width = 600,
-        height = 600,
-        title = 'Dataset name {0} - samples = {1} - features = {2} - classes = {3}'.format(dataset_name, X.shape[0], X.shape[1], np.max(labels) + 1))
-    fig.update_yaxes(
-        scaleanchor = "x",
-        scaleratio = 1)
-    return fig
-
 
 
 def plot_blobs(X, labels=None, threeD=False, doPCA=True, sizex=1):

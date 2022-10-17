@@ -49,10 +49,11 @@ def main():
         for eachDatasetName in battery:
             benchmark = clustbench.load_dataset(eachBatteryName, eachDatasetName, path=data_path)
             X = benchmark.data
-            print(type(X))
             y_true = benchmark.labels[0]
+        
             if len(X) > 10000:       # max limit size of points
                 continue
+            
             correct_number_of_clusters = max(y_true)
             
             print("- {0}".format(eachDatasetName))
@@ -60,24 +61,18 @@ def main():
             
             results = []
             figures = []
-            figures.append(data_plot.doPCA(X, y_true, eachDatasetName))
+            figures.append(data_plot.doPCA(X, y_true, eachDatasetName, isExample=True))
 
             # Circle Clustering
-            circleClustering = (engine.CircleClustering(X) + 1, "CircleClustering")
-            figures.append(data_plot.doPCA(X, circleClustering[0], circleClustering[1]))
-            results.append(circleClustering)
-
+            # executeClusteringFunction(1, X, "CircleClustering", figures, results, correct_number_of_clusters, y_true)
             # k-means
-            results.append((clustering_sklearn.KMeans(correct_number_of_clusters).fit(X).labels_ + 1, "Kmeans"))
-
+            executeClusteringFunction(2, X, "KMeans", figures, results, correct_number_of_clusters, y_true)
             # affinity propagation
-            results.append((clustering_sklearn.AffinityPropagation().fit(X).labels_ + 1, "Affinity propagation"))
-
+            executeClusteringFunction(3, X, "AffinityPropagation", figures, results, correct_number_of_clusters, y_true)
             # mean shift
-            results.append((clustering_sklearn.MeanShift().fit(X).labels_ + 1, "Meanshoft"))
-
+            executeClusteringFunction(4, X, "MeanShift", figures, results, correct_number_of_clusters, y_true)
             # genie
-            results.append((genieclust.Genie(n_clusters=correct_number_of_clusters).fit_predict(X) + 1, "Genie"))
+            executeClusteringFunction(5, X, "Genie", figures, results, correct_number_of_clusters, y_true)
 
             # hierarchical clustering
             # - ward
@@ -96,16 +91,6 @@ def main():
             # dbscan
 
             # optics
-
-
-            '''
-                Computing the score of the samples 
-            '''
-            for res in results:
-                score_rand_index = metrics.adjusted_rand_score(y_true, res[0])
-                mutual_score = metrics.adjusted_mutual_info_score(y_true, res[0])
-
-                print("Score alg {0} = {1} , {2}".format(res[1], score_rand_index, mutual_score))
                 
 
             data_plot.figures_to_html(figures)
@@ -117,8 +102,7 @@ def main():
 
 
 
-    
-    '''
+'''
     battery, dataset = "wut", "x2"
     benchmark = clustbench.load_dataset(battery, dataset, path=data_path)
     X = benchmark.data
@@ -144,10 +128,10 @@ def main():
     
     # engine.CircleClustering(samples, labels, n_dataset)
 
-    '''
+    
 
 def doClustering(whatClustering, correct_number_of_clusters, X, queue):
-    '''
+    
     switch={
         # 1: (engine.CircleClustering(X) + 1, "CircleClustering"),        # -> returns error
         2: (clustering_sklearn.KMeans(correct_number_of_clusters).fit(X).labels_ + 1, "KMeans"),
@@ -156,7 +140,7 @@ def doClustering(whatClustering, correct_number_of_clusters, X, queue):
         5: (genieclust.Genie(n_clusters=correct_number_of_clusters).fit_predict(X) + 1, "Genie")
         # ...
     }   
-    '''
+
 
     if whatClustering == 2:
         name = "KMeans"
@@ -174,6 +158,35 @@ def doClustering(whatClustering, correct_number_of_clusters, X, queue):
     print("{0} terminated".format(whatClustering));
     queue.put((name, res))
 
+'''
+
+
+def executeClusteringFunction(number, X, name, figures, results, correct_number_of_clusters, y_true):
+    if number == 1:
+        name = "CircleClustering"
+        res = engine.CircleClustering(X) + 1
+    elif number == 2:
+        name = "KMeans"
+        res = clustering_sklearn.KMeans(correct_number_of_clusters).fit(X).labels_ + 1
+    elif number == 3:
+        name = "Affinity Propagation"
+        res = clustering_sklearn.AffinityPropagation().fit(X).labels_ + 1
+    elif number == 4:
+        name = "Meanshift"
+        res = clustering_sklearn.MeanShift().fit(X).labels_ + 1
+    elif number == 5:
+        name = "Genie"
+        res = genieclust.Genie(n_clusters=correct_number_of_clusters).fit_predict(X) + 1
+
+    adjusted_rand_score = metrics.adjusted_rand_score(y_true, res)
+    adjusted_mutual_info_score = metrics.adjusted_mutual_info_score(y_true, res)
+
+    figures.append(data_plot.doPCA(X, 
+        res, 
+        name, 
+        comment = "Score algorithm : adjusted_rand_score = {1} , adjusted_mutual_info_score = {2}".format(res[1], round(adjusted_rand_score, 4), round(adjusted_mutual_info_score, 4)))
+    )
 
 if __name__ == "__main__":
     main()
+
