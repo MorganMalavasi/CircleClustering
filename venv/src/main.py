@@ -8,6 +8,7 @@ import clustbench
 import sklearn.metrics as metrics
 import sklearn.cluster as clustering_sklearn
 import genieclust
+import data_plot
 
 os.environ["KMP_WARNINGS"] = "FALSE" 
 
@@ -46,16 +47,25 @@ def main():
         battery = clustbench.get_dataset_names(eachBatteryName, path=data_path)
         print(eachBatteryName)
         for eachDatasetName in battery:
-            print("- {0}".format(eachDatasetName))
             benchmark = clustbench.load_dataset(eachBatteryName, eachDatasetName, path=data_path)
             X = benchmark.data
-            y_true = benchmark.labels[1]
+            print(type(X))
+            y_true = benchmark.labels[0]
+            if len(X) > 10000:       # max limit size of points
+                continue
             correct_number_of_clusters = max(y_true)
+            
+            print("- {0}".format(eachDatasetName))
             print("Dataset size {0}".format(len(X)))
-
+            
             results = []
+            figures = []
+            figures.append(data_plot.doPCA(X, y_true, eachDatasetName))
+
             # Circle Clustering
-            results.append((engine.CircleClustering(X) + 1, "CircleClustering"))
+            circleClustering = (engine.CircleClustering(X) + 1, "CircleClustering")
+            figures.append(data_plot.doPCA(X, circleClustering[0], circleClustering[1]))
+            results.append(circleClustering)
 
             # k-means
             results.append((clustering_sklearn.KMeans(correct_number_of_clusters).fit(X).labels_ + 1, "Kmeans"))
@@ -98,6 +108,8 @@ def main():
                 print("Score alg {0} = {1} , {2}".format(res[1], score_rand_index, mutual_score))
                 
 
+            data_plot.figures_to_html(figures)
+            break
         break
 
 

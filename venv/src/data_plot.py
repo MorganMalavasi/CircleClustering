@@ -2,7 +2,9 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
+from plotly.subplots import make_subplots
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 from matplotlib.widgets import CheckButtons
 from sklearn.decomposition import PCA
 from scipy.stats import norm
@@ -11,19 +13,37 @@ from scipy.stats import norm
 PI = np.pi
 PI = np.float32(PI)
 
+def doPCA(X, labels, dataset_name):
 
-def doPCA(X, labels, n_dataset):
+    if X.shape[1] > 2:
+        return doPCA3D(X, labels, dataset_name)
+
     pca = PCA(n_components=2)
     components = pca.fit_transform(X)
     fig = px.scatter(components, x = 0, y = 1, title = 'Blobs', color=labels, labels={'0': 'PC 1', '1': 'PC 2'})
     fig.update_layout(
         width = 600,
         height = 600,
-        title = 'Dataset nr {0} - samples = {1} - features = {2} - classes = {3}'.format(n_dataset, X.shape[0], X.shape[1], np.max(labels) + 1))
+        title = 'Dataset name {0} - samples = {1} - features = {2} - classes = {3}'.format(dataset_name, X.shape[0], X.shape[1], np.max(labels) + 1))
     fig.update_yaxes(
         scaleanchor = "x",
         scaleratio = 1)
-    fig.show()
+    return fig
+
+def doPCA3D(X, labels, dataset_name):
+    pca = PCA(n_components=3)
+    components = pca.fit_transform(X)
+    fig = px.scatter_3d(components, x = 0, y = 1, z = 2, title = 'Blobs', color=labels, labels={'0': 'PC 1', '1': 'PC 2', '2': 'PC 3'})
+    fig.update_layout(
+        width = 600,
+        height = 600,
+        title = 'Dataset name {0} - samples = {1} - features = {2} - classes = {3}'.format(dataset_name, X.shape[0], X.shape[1], np.max(labels) + 1))
+    fig.update_yaxes(
+        scaleanchor = "x",
+        scaleratio = 1)
+    return fig
+
+
 
 def plot_blobs(X, labels=None, threeD=False, doPCA=True, sizex=1):
 
@@ -286,3 +306,11 @@ def drawMixtureOfGaussians(theta, bins, gmm):
     '''
 
     return (None, None, None)
+
+def figures_to_html(figs, filename="dashboard.html"):
+    with open(filename, 'w') as dashboard:
+        dashboard.write("<html><head></head><body>" + "\n")
+        for fig in figs:
+            inner_html = fig.to_html().split('<body>')[1].split('</body>')[0]
+            dashboard.write(inner_html)
+        dashboard.write("</body></html>" + "\n")
