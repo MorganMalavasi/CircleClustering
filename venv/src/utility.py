@@ -1,4 +1,5 @@
-from array import array
+from importlib.resources import path
+import os
 import sys
 import numpy as np
 import pandas as pd
@@ -241,3 +242,15 @@ def find_max_repeating_number_in_array_using_count(arr):
             clusters = elementToCheck
     
     return clusters
+
+def my_get_dataset_names(batteryName):
+    nameInitDir = "clustering-data-v1-1.1.0"
+    nameDir = nameInitDir + '/' + batteryName
+    listOfFiles = os.listdir(nameDir)
+
+    listOfDatasets = []
+    for file in listOfFiles:
+        if 'data.gz' in file:
+            listOfDatasets.append(file.replace('.data.gz', ''))
+
+    return listOfDatasets

@@ -13,7 +13,7 @@ from scipy.stats import norm
 PI = np.pi
 PI = np.float32(PI)
 
-def doPCA(X, labels, dataset_name, comment = None, isExample = False):
+def doPCA(X, labels, dataset_name = None, algorithm_name = None, comment = None, isExample = False):
     #  print("Score alg {0} = {1} , {2}".format(res[1], score_rand_index, mutual_score))
     if X.shape[1] > 2:
         pca = PCA(n_components=3)
@@ -27,7 +27,7 @@ def doPCA(X, labels, dataset_name, comment = None, isExample = False):
     fig.update_layout(
         width = 1000,
         height = 600,
-        title = 'Dataset name {0} - samples = {1} - features = {2} - classes = {3}'.format(dataset_name, X.shape[0], X.shape[1], np.max(labels))
+        title = 'Dataset name {0} - algorithm {1} - samples = {2} - features = {3} - classes = {3}'.format(dataset_name, algorithm_name, X.shape[0], X.shape[1], np.max(labels))
     )
     fig.update_yaxes(
         scaleanchor = "x",
@@ -313,7 +313,11 @@ def drawMixtureOfGaussians(theta, bins, gmm):
 def figures_to_html(figs, filename="dashboard.html"):
     with open(filename, 'w') as dashboard:
         dashboard.write("<html><head></head><body>" + "\n")
-        for fig in figs:
-            inner_html = fig.to_html().split('<body>')[1].split('</body>')[0]
-            dashboard.write(inner_html)
+        for eachDataset in figs:
+            nameDataset = eachDataset[1]
+            dashboard.write("<h1 style=\"padding-left: 45;\">{0}</h1>\n".format(nameDataset))
+            for fig in eachDataset[0]:
+                inner_html = fig.to_html().split('<body>')[1].split('</body>')[0]
+                dashboard.write(inner_html)
+            dashboard.write("<HR WIDTH=\"90%\" COLOR=\"#6699FF\" SIZE=\"6\">")
         dashboard.write("</body></html>" + "\n")
